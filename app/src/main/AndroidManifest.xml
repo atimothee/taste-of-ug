@@ -54,7 +54,7 @@
         </service>
         <provider
             android:name="com.tasteofuganda.data.provider.StubProvider"
-            android:authorities="com.example.android.datasync.provider"
+            android:authorities="com.tasteofuganda.data.provider"
             android:exported="false"
             android:syncable="true"/>
         <service

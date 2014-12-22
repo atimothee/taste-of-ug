@@ -26,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
 
     // Constants
     // The authority for the sync adapter's content provider
-    public static final String AUTHORITY = "com.example.android.datasync.provider"
+    public static final String AUTHORITY = "com.tasteofuganda.data.provider";
     // An account type, in the form of a domain name
     public static final String ACCOUNT_TYPE = "example.com";
     // The account name

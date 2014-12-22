@@ -1,4 +1,4 @@
-package com.tasteofuganda.com.tasteofuganda.gcm;
+package com.tasteofuganda.gcm;
 
 import android.app.Activity;
 import android.content.ComponentName;

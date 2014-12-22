@@ -6,6 +6,13 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
 
     <permission
         android:name="com.example.gcm.permission.C2D_MESSAGE"
@@ -28,14 +35,41 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name="com.tasteofuganda.com.tasteofuganda.gcm.GcmBroadcastReceiver"
+            android:name="com.tasteofuganda.gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="com.tasteofuganda.com" />
             </intent-filter>
         </receiver>
-        <service android:name="com.tasteofuganda.com.tasteofuganda.gcm.GcmIntentService" />
+        <service android:name="com.tasteofuganda.gcm.GcmIntentService" />
+        <service
+            android:name="com.tasteofuganda.sync.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <provider
+            android:name="com.tasteofuganda.data.provider.StubProvider"
+            android:authorities="com.example.android.datasync.provider"
+            android:exported="false"
+            android:syncable="true"/>
+        <service
+            android:name="com.tasteofuganda.sync.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+
+
     </application>
 
 </manifest>

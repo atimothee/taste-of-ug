@@ -39,7 +39,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the dummy account
-        mAccount = CreateSyncAccount(this);
+       // mAccount = CreateSyncAccount(this);
         setContentView(R.layout.activity_main);
 
         new GcmRegistrationAsyncTask(this).execute();
@@ -110,7 +110,7 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
     private Context context;
 
     // TODO: change to your own sender ID to Google Developers Console project number, as per instructions above
-    private static final String SENDER_ID = "1096798891567";
+    private static final String SENDER_ID = "672313486347";
 
     public GcmRegistrationAsyncTask(Context context) {
         this.context = context;
@@ -123,7 +123,8 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
                     new AndroidJsonFactory(), null)
                     // Need setRootUrl and setGoogleClientRequestInitializer only for local testing,
                     // otherwise they can be skipped
-                    .setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                    //.setRootUrl("http://10.0.2.2:8080/_ah/api/")
+                    .setRootUrl("http://10.0.3.2:8080/_ah/api/")//for genymotion
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         @Override
                         public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest)

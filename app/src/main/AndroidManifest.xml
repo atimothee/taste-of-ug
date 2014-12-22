@@ -15,10 +15,10 @@
 
 
     <permission
-        android:name="com.example.gcm.permission.C2D_MESSAGE"
+        android:name="com.tasteofuganda.app.gcm.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.gcm.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.tasteofuganda.app.gcm.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
@@ -39,7 +39,7 @@
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="com.tasteofuganda.com" />
+                <category android:name="com.tasteofuganda.app" />
             </intent-filter>
         </receiver>
         <service android:name="com.tasteofuganda.gcm.GcmIntentService" />

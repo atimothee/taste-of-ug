@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/3lF67wLXoSlj_z__El0W0jn4jiA\"",
+ "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/-S6rwZdBgvluOaOuNAg6732DKcM\"",
  "discoveryVersion": "v1",
  "id": "registration:v1",
  "name": "registration",
@@ -13,8 +13,8 @@
   "x32": "http://www.google.com/images/icons/product/search-32.gif"
  },
  "protocol": "rpc",
- "rootUrl": "https://myApplicationId.appspot.com/_ah/api/",
- "rpcUrl": "https://myApplicationId.appspot.com/_ah/api/rpc",
+ "rootUrl": "https://tasteofuganda.appspot.com/_ah/api/",
+ "rpcUrl": "https://tasteofuganda.appspot.com/_ah/api/rpc",
  "rpcPath": "/_ah/api/rpc",
  "parameters": {
   "alt": {

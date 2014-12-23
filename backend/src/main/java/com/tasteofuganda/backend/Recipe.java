@@ -1,8 +1,15 @@
 package com.tasteofuganda.backend;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
+import com.google.api.server.spi.config.ApiTransformer;
+import com.google.appengine.api.blobstore.BlobKey;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+
+import java.util.List;
 
 /**
  * Created by Timo on 12/23/14.
@@ -16,7 +23,75 @@ public class Recipe {
     String description;
     String directions;
     String youtube_url;
-    Long category_id;
+
+    Key<Category> category;
+    BlobKey image;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDirections() {
+        return directions;
+    }
+
+    public void setDirections(String directions) {
+        this.directions = directions;
+    }
+
+    public String getYoutube_url() {
+        return youtube_url;
+    }
+
+    public void setYoutube_url(String youtube_url) {
+        this.youtube_url = youtube_url;
+    }
+
+    public BlobKey getImage() {
+        return image;
+    }
+
+    public void setImage(BlobKey image) {
+        this.image = image;
+    }
+
+    @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
+    public Key<Category> getCategory() {
+        return category;
+    }
+
+    @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
+    public void setCategory(Key<Category> category) {
+        this.category = category;
+    }
+
+    public Long getCategoryId(){
+        return category == null ? null : category.getId();
+    }
+
+    public void setCategoryId(Long categoryId){
+        category = Key.create(Category.class, categoryId);
+    }
 }
 
 

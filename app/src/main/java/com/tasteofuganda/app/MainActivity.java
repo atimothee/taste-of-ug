@@ -15,6 +15,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.tasteofuganda.backend.recipeApi.model.Recipe;
 import com.tasteofuganda.backend.registration.Registration;
 
 import java.io.IOException;
@@ -138,6 +139,8 @@ class GcmRegistrationAsyncTask extends AsyncTask<Context, Void, String> {
 
             regService = builder.build();
         }
+
+        //RecipeApi.Builder builder = new RecipeApi.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), null);
 
         String msg = "";
         try {

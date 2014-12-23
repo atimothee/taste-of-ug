@@ -81,7 +81,7 @@ public class CategoryEndpoint {
         //
         // If your client provides the ID then you should probably use PUT instead.
         ofy().save().entity(category).now();
-        logger.info("Created Category.");
+        logger.info("Created Category with ID: " + category.getId());
 
         return ofy().load().entity(category).now();
     }

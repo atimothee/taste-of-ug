@@ -81,7 +81,7 @@ public class RecipeEndpoint {
         //
         // If your client provides the ID then you should probably use PUT instead.
         ofy().save().entity(recipe).now();
-        logger.info("Created Recipe.");
+        logger.info("Created Recipe with ID: " + recipe.getId());
 
         return ofy().load().entity(recipe).now();
     }

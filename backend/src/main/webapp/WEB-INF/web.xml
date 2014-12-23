@@ -14,8 +14,8 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>com.tasteofuganda.backend.RegistrationEndpoint,
-                com.tasteofuganda.backend.MessagingEndpoint
-            </param-value>
+                com.tasteofuganda.backend.MessagingEndpoint,
+                com.tasteofuganda.backend.CategoryEndpoint, com.tasteofuganda.backend.RecipeEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

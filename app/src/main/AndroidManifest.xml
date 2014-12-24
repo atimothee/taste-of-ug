@@ -52,11 +52,13 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
         <provider
-            android:name="com.tasteofuganda.data.provider.StubProvider"
-            android:authorities="com.tasteofuganda.data.provider"
+            android:name="com.tasteofuganda.app.provider.TasteOfUgProvider"
+            android:authorities="com.tasteofuganda.app.provider"
             android:exported="false"
-            android:syncable="true"/>
+            android:syncable="true"
+            />
         <service
             android:name="com.tasteofuganda.sync.SyncService"
             android:exported="true"

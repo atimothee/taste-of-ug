@@ -4,6 +4,8 @@ import com.google.api.server.spi.config.AnnotationBoolean;
 import com.google.api.server.spi.config.ApiResourceProperty;
 import com.google.api.server.spi.config.ApiTransformer;
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Link;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -21,8 +23,9 @@ public class Recipe {
     Long id;
     String name;
     String description;
-    String directions;
-    String youtube_url;
+    String ingredients;
+    Blob directions;
+    Link youtube_url;
 
     Key<Category> category;
     BlobKey image;
@@ -51,19 +54,19 @@ public class Recipe {
         this.description = description;
     }
 
-    public String getDirections() {
+    public Blob getDirections() {
         return directions;
     }
 
-    public void setDirections(String directions) {
+    public void setDirections(Blob directions) {
         this.directions = directions;
     }
 
-    public String getYoutube_url() {
+    public Link getYoutube_url() {
         return youtube_url;
     }
 
-    public void setYoutube_url(String youtube_url) {
+    public void setYoutube_url(Link youtube_url) {
         this.youtube_url = youtube_url;
     }
 
@@ -91,6 +94,14 @@ public class Recipe {
 
     public void setCategoryId(Long categoryId){
         category = Key.create(Category.class, categoryId);
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
     }
 }
 

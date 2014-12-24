@@ -14,6 +14,15 @@ import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.tasteofuganda.backend.recipeApi.RecipeApi;
+import com.tasteofuganda.backend.recipeApi.model.Recipe;
+
+import java.io.IOException;
+import java.util.List;
+
 /**
  * Handle the transfer of data between a server and an
  * app, using the Android sync adapter framework.
@@ -70,6 +79,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     /*
      * Put the data transfer code here.
      */
+        RecipeApi.Builder builder = new RecipeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
+        RecipeApi recipeApi = builder.build();
+        try {
+            List<Recipe> recipes = recipeApi.list().execute().getItems();
+            for (Recipe r: recipes){
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

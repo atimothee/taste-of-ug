@@ -24,6 +24,9 @@ import java.util.logging.Logger;
  * Created by Timo on 12/22/14.
  */
 public class GcmIntentService extends IntentService {
+    public static final int NOTIFICATION_ID = 1;
+    private NotificationManager mNotificationManager;
+
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -43,20 +46,7 @@ public class GcmIntentService extends IntentService {
                 Logger.getLogger("GCM_RECEIVED").log(Level.INFO, extras.toString());
 
                 showToast(extras.getString("message"));
-                NotificationCompat.Builder mbuilder = new NotificationCompat.Builder(getApplicationContext()).setContentTitle("timo")
-                        .setContentText(extras.getString("message"));
-                Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
-                TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-                stackBuilder.addNextIntent(resultIntent);
-                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-                mbuilder.setContentIntent(resultPendingIntent)
-                .setSmallIcon(R.drawable.ic_launcher);
-
-                NotificationManager notificationManager = (NotificationManager) getApplicationContext()
-
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-
-                notificationManager.notify(4004, mbuilder.build());
+                sendNotification(extras.getString("message"));
 
             }
 
@@ -64,6 +54,27 @@ public class GcmIntentService extends IntentService {
         }
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
+
+    private void sendNotification(String msg) {
+        mNotificationManager = (NotificationManager)
+                this.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setContentTitle("Recipe of the week")
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(msg))
+                        .setContentText(msg);
+
+        mBuilder.setContentIntent(resultPendingIntent);
+        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
+
 
     protected void showToast(final String message) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {

@@ -43,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final String SENDER_ID = "10592780844";
     // An account type, in the form of a domain name
-    public static final String ACCOUNT_TYPE = "example.com";
+    public static final String ACCOUNT_TYPE = "com.tasteofuganda.datasync";
     // The account name
     public static final String ACCOUNT = "dummyaccount";
     // Instance fields
@@ -58,7 +58,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the dummy account
-       // mAccount = CreateSyncAccount(this);
+        mAccount = CreateSyncAccount(this);
+        ContentResolver.setSyncAutomatically(mAccount, TasteOfUgProvider.AUTHORITY, true);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
 
@@ -74,10 +75,9 @@ public class MainActivity extends ActionBarActivity {
                 registerInBackground();
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
                 bundle.putString("message", "sync-all");
-                ContentResolver.requestSync(null, TasteOfUgProvider.AUTHORITY, bundle);
+                ContentResolver.requestSync(mAccount, TasteOfUgProvider.AUTHORITY, bundle);
             }
             else {
                 Log.d(TAG, "Device already registered with no "+regid);

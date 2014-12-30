@@ -85,10 +85,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String authority,
             ContentProviderClient provider,
             SyncResult syncResult) {
+        Log.d(TAG, "Perform sync called..."+extras.toString());
+
         CategoryApi.Builder cBuilder = new CategoryApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
         CategoryApi categoryApi = cBuilder.build();
         RecipeApi.Builder builder = new RecipeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
         RecipeApi recipeApi = builder.build();
+        try{
 
         if(extras.getString("resource_type")=="category"){
             try {
@@ -117,14 +120,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 e.printStackTrace();
             }
 
-        }else if(extras.getString("message")=="sync_all"){
+        }else if(extras.getString("message").equals("sync-all")) {
+            Log.d(TAG, "Sync all is called...");
 
             List<ContentValues> categoryCValuesList = new ArrayList<ContentValues>();
             ContentValues categoryContentValues = null;
 
             try {
                 List<Category> categories = categoryApi.list().execute().getItems();
-                for(Category c: categories){
+                for (Category c : categories) {
                     categoryContentValues = new ContentValues();
                     categoryContentValues.put(CategoryColumns._ID, c.getId());
                     categoryContentValues.put(CategoryColumns.NAME, c.getName());
@@ -141,7 +145,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 List<Recipe> recipes = recipeApi.list().execute().getItems();
 
-                for (Recipe r: recipes){
+                for (Recipe r : recipes) {
                     contentValues = new ContentValues();
                     contentValues.put(RecipeColumns._ID, r.getId());
                     contentValues.put(RecipeColumns.RECIPE_NAME, r.getName());
@@ -150,14 +154,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                     contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
                     contentValuesList.add(contentValues);
-                    Log.d(TAG, "Recipe "+r.getName()+" downloaded");
+                    Log.d(TAG, "Recipe " + r.getName() + " downloaded");
                 }
 
                 provider.bulkInsert(RecipeColumns.CONTENT_URI, contentValuesList.toArray(new ContentValues[contentValuesList.size()]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
 
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
 

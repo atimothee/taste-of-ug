@@ -6,6 +6,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.blobstore.BlobstoreServicePb;
+import com.google.appengine.api.datastore.Text;
 import com.googlecode.objectify.Key;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class Upload extends HttpServlet{
             Recipe r = new Recipe();
             r.category = Key.create(Category.class, req.getParameter("categoryId"));
             r.description = req.getParameter("description");
-            r.directions = req.getParameter("directions");
+            r.directions = new Text(req.getParameter("directions"));
             r.name = req.getParameter("name");
             r.image = blobKeys.get(0);
             //new RecipeEndpoint().insert(r);

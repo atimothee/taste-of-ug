@@ -14,12 +14,16 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.tasteofuganda.app.provider.TasteOfUgProvider;
+import com.tasteofuganda.app.provider.category.CategoryColumns;
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
+import com.tasteofuganda.backend.categoryApi.CategoryApi;
+import com.tasteofuganda.backend.categoryApi.model.Category;
 import com.tasteofuganda.backend.recipeApi.RecipeApi;
 import com.tasteofuganda.backend.recipeApi.model.Recipe;
 
@@ -84,6 +88,25 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     /*
      * Put the data transfer code here.
      */
+        CategoryApi.Builder cBuilder = new CategoryApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
+        CategoryApi categoryApi = cBuilder.build();
+        List<ContentValues> categoryCValuesList = new ArrayList<ContentValues>();
+        ContentValues categoryContentValues = null;
+        try {
+            List<Category> categories = categoryApi.list().execute().getItems();
+            for(Category c: categories){
+                categoryContentValues = new ContentValues();
+                categoryContentValues.put(CategoryColumns._ID, c.getId());
+                categoryContentValues.put(CategoryColumns.NAME, c.getName());
+                categoryContentValues.put(CategoryColumns.COLOR, c.getColor());
+                categoryCValuesList.add(categoryContentValues);
+            }
+            provider.bulkInsert(CategoryColumns.CONTENT_URI, categoryCValuesList.toArray(new ContentValues[categoryCValuesList.size()]));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         RecipeApi.Builder builder = new RecipeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
         RecipeApi recipeApi = builder.build();
         //ContentValues[] cvArray = new ContentValues[]();
@@ -95,15 +118,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             for (Recipe r: recipes){
                 contentValues = new ContentValues();
                 contentValues.put(RecipeColumns._ID, r.getId());
+                contentValues.put(RecipeColumns.RECIPE_NAME, r.getName());
                 contentValues.put(RecipeColumns.CATEGORYID, r.getCategoryId());
                 contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
-                contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections());
+                contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                 contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
                 contentValuesList.add(contentValues);
+                Log.d(TAG, "Recipe "+r.getName()+" downloaded");
             }
-            TasteOfUgProvider provider1 = new TasteOfUgProvider();
-            provider1.bulkInsert(RecipeColumns.CONTENT_URI, contentValuesList.toArray(new ContentValues[contentValuesList.size()]));
-        } catch (IOException e) {
+
+            provider.bulkInsert(RecipeColumns.CONTENT_URI, contentValuesList.toArray(new ContentValues[contentValuesList.size()]));
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

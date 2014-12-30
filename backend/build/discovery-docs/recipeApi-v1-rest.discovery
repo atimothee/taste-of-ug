@@ -1,6 +1,6 @@
 {
  "kind": "discovery#restDescription",
- "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/c1bO0pNG7gvLHRbtkv4G4CfDGmM\"",
+ "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/vH23ZFzUch7us523X4lHnRgNAt0\"",
  "discoveryVersion": "v1",
  "id": "recipeApi:v1",
  "name": "recipeApi",
@@ -97,6 +97,15 @@
     }
    }
   },
+  "Link": {
+   "id": "Link",
+   "type": "object",
+   "properties": {
+    "value": {
+     "type": "string"
+    }
+   }
+  },
   "Recipe": {
    "id": "Recipe",
    "type": "object",
@@ -109,7 +118,7 @@
      "type": "string"
     },
     "directions": {
-     "type": "string"
+     "$ref": "Text"
     },
     "id": {
      "type": "string",
@@ -118,10 +127,22 @@
     "image": {
      "$ref": "BlobKey"
     },
+    "ingredients": {
+     "type": "string"
+    },
     "name": {
      "type": "string"
     },
     "youtube_url": {
+     "$ref": "Link"
+    }
+   }
+  },
+  "Text": {
+   "id": "Text",
+   "type": "object",
+   "properties": {
+    "value": {
      "type": "string"
     }
    }

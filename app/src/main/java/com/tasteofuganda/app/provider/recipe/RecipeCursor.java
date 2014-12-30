@@ -16,11 +16,11 @@ public class RecipeCursor extends AbstractCursor {
     }
 
     /**
-     * Get the {@code name} value.
+     * Get the {@code recipe_name} value.
      * Can be {@code null}.
      */
-    public String getName() {
-        Integer index = getCachedColumnIndexOrThrow(RecipeColumns.NAME);
+    public String getRecipeName() {
+        Integer index = getCachedColumnIndexOrThrow(RecipeColumns.RECIPE_NAME);
         return getString(index);
     }
 
@@ -57,15 +57,6 @@ public class RecipeCursor extends AbstractCursor {
      */
     public Long getCategoryid() {
         return getLongOrNull(RecipeColumns.CATEGORYID);
-    }
-
-    /**
-     * Get the {@code imagekey} value.
-     * Can be {@code null}.
-     */
-    public String getImagekey() {
-        Integer index = getCachedColumnIndexOrThrow(RecipeColumns.IMAGEKEY);
-        return getString(index);
     }
 
     /**

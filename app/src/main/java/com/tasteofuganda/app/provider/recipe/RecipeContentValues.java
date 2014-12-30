@@ -26,13 +26,13 @@ public class RecipeContentValues extends AbstractContentValues {
         return contentResolver.update(uri(), values(), where == null ? null : where.sel(), where == null ? null : where.args());
     }
 
-    public RecipeContentValues putName(String value) {
-        mContentValues.put(RecipeColumns.NAME, value);
+    public RecipeContentValues putRecipeName(String value) {
+        mContentValues.put(RecipeColumns.RECIPE_NAME, value);
         return this;
     }
 
-    public RecipeContentValues putNameNull() {
-        mContentValues.putNull(RecipeColumns.NAME);
+    public RecipeContentValues putRecipeNameNull() {
+        mContentValues.putNull(RecipeColumns.RECIPE_NAME);
         return this;
     }
 
@@ -77,17 +77,6 @@ public class RecipeContentValues extends AbstractContentValues {
 
     public RecipeContentValues putCategoryidNull() {
         mContentValues.putNull(RecipeColumns.CATEGORYID);
-        return this;
-    }
-
-
-    public RecipeContentValues putImagekey(String value) {
-        mContentValues.put(RecipeColumns.IMAGEKEY, value);
-        return this;
-    }
-
-    public RecipeContentValues putImagekeyNull() {
-        mContentValues.putNull(RecipeColumns.IMAGEKEY);
         return this;
     }
 

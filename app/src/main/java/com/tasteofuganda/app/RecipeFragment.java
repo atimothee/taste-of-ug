@@ -11,6 +11,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
 
@@ -21,6 +22,8 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int RECIPE_LOADER = 0;
     private SimpleCursorAdapter recipeAdapter;
+    private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.IMAGEKEY};
+    private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_image};
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -31,8 +34,11 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        recipeAdapter = new SimpleCursorAdapter(getActivity(),R.layout.list_item_recipe, null,new String[]{}, new int[]{}, 0);
-        return super.onCreateView(inflater, container, savedInstanceState);
+        recipeAdapter = new SimpleCursorAdapter(getActivity(),R.layout.list_item_recipe, null,COLUMNS, VIEW_IDS, 0);
+        View rootView = inflater.inflate(R.layout.recipe_fragment, null);
+        ListView listView = (ListView) rootView.findViewById(R.id.recipe_list);
+        listView.setAdapter(recipeAdapter);
+        return rootView;
     }
 
     @Override

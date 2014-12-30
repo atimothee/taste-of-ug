@@ -53,18 +53,18 @@ public class RecipeSelection extends AbstractSelection<RecipeSelection> {
     }
 
 
-    public RecipeSelection name(String... value) {
-        addEquals(RecipeColumns.NAME, value);
+    public RecipeSelection recipeName(String... value) {
+        addEquals(RecipeColumns.RECIPE_NAME, value);
         return this;
     }
 
-    public RecipeSelection nameNot(String... value) {
-        addNotEquals(RecipeColumns.NAME, value);
+    public RecipeSelection recipeNameNot(String... value) {
+        addNotEquals(RecipeColumns.RECIPE_NAME, value);
         return this;
     }
 
-    public RecipeSelection nameLike(String... value) {
-        addLike(RecipeColumns.NAME, value);
+    public RecipeSelection recipeNameLike(String... value) {
+        addLike(RecipeColumns.RECIPE_NAME, value);
         return this;
     }
 
@@ -140,21 +140,6 @@ public class RecipeSelection extends AbstractSelection<RecipeSelection> {
 
     public RecipeSelection categoryidLtEq(long value) {
         addLessThanOrEquals(RecipeColumns.CATEGORYID, value);
-        return this;
-    }
-
-    public RecipeSelection imagekey(String... value) {
-        addEquals(RecipeColumns.IMAGEKEY, value);
-        return this;
-    }
-
-    public RecipeSelection imagekeyNot(String... value) {
-        addNotEquals(RecipeColumns.IMAGEKEY, value);
-        return this;
-    }
-
-    public RecipeSelection imagekeyLike(String... value) {
-        addLike(RecipeColumns.IMAGEKEY, value);
         return this;
     }
 

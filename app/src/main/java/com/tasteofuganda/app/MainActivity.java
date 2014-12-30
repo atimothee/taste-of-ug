@@ -3,6 +3,7 @@ package com.tasteofuganda.app;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -67,11 +70,23 @@ public class MainActivity extends ActionBarActivity {
             regid = getRegistrationId(context);
 
             if (regid.isEmpty()) {
+                Log.d(TAG, "Registering in background...");
                 registerInBackground();
+            }
+            else {
+                Log.d(TAG, "Device already registered with no "+regid);
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
+        Button btn = (Button)findViewById(R.id.clickme);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent("com.tasteofuganda.app.RecipeActivity");
+                startActivity(i);
+            }
+        });
     }
 
     @Override
@@ -156,7 +171,7 @@ public class MainActivity extends ActionBarActivity {
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
             Log.i(TAG, "Registration not found.");
-            return "";
+            return registrationId;
         }
         // Check if app was updated; if so, it must clear the registration ID
         // since the existing regID is not guaranteed to work with the new
@@ -180,7 +195,7 @@ public class MainActivity extends ActionBarActivity {
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
-        Log.i(TAG, "Saving regId on app version " + appVersion);
+        Log.i(TAG, "Saving regId "+regId+" on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);

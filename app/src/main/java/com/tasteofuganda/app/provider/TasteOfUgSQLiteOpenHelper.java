@@ -34,12 +34,11 @@ public class TasteOfUgSQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE_RECIPE = "CREATE TABLE IF NOT EXISTS "
             + RecipeColumns.TABLE_NAME + " ( "
             + RecipeColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + RecipeColumns.NAME + " TEXT, "
+            + RecipeColumns.RECIPE_NAME + " TEXT, "
             + RecipeColumns.DESCRIPTION + " TEXT, "
             + RecipeColumns.INGREDIENTS + " TEXT, "
             + RecipeColumns.DIRECTIONS + " TEXT, "
             + RecipeColumns.CATEGORYID + " INTEGER, "
-            + RecipeColumns.IMAGEKEY + " TEXT, "
             + RecipeColumns.IMAGEKEY + " TEXT "
             + ", CONSTRAINT fk_categoryid FOREIGN KEY (categoryid) REFERENCES category (_id) ON DELETE CASCADE"
             + " );";

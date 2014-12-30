@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.ApiTransformer;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Link;
+import com.google.appengine.api.datastore.Text;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -24,7 +25,7 @@ public class Recipe {
     String name;
     String description;
     String ingredients;
-    Blob directions;
+    Text directions;
     Link youtube_url;
 
     Key<Category> category;
@@ -54,11 +55,11 @@ public class Recipe {
         this.description = description;
     }
 
-    public Blob getDirections() {
+    public Text getDirections() {
         return directions;
     }
 
-    public void setDirections(Blob directions) {
+    public void setDirections(Text directions) {
         this.directions = directions;
     }
 

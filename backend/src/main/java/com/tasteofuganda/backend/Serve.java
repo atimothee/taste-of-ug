@@ -33,7 +33,7 @@ public class Serve extends HttpServlet {
 //        Image newImage = imagesService.applyTransform(resize, oldImage);
 //
 //        byte[] newImageData = newImage.getImageData();
-        //blobstoreService.serve(blobKey, res);
+        blobstoreService.serve(blobKey, res);
         ServingUrlOptions sevOptions = ServingUrlOptions.Builder.withBlobKey(blobKey);
         res.sendRedirect(imagesService.getServingUrl(sevOptions));
     }

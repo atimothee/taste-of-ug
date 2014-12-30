@@ -7,6 +7,9 @@ import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.blobstore.BlobstoreServicePb;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.ServingUrlOptions;
 import com.googlecode.objectify.Key;
 
 import java.io.IOException;
@@ -42,7 +45,12 @@ public class Upload extends HttpServlet{
             r.description = req.getParameter("description");
             r.directions = new Text(req.getParameter("directions"));
             r.name = req.getParameter("name");
+            ImagesService imagesService = ImagesServiceFactory.getImagesService();
+            ServingUrlOptions sevOptions = ServingUrlOptions.Builder.withBlobKey(blobKeys.get(0));
+            res.sendRedirect(imagesService.getServingUrl(sevOptions));
             r.image = blobKeys.get(0);
+            //r.thumbnail = imagesService.getServingUrl(sevOptions);
+            //r.large_image = imagesService.getServingUrl(sevOptions);
             //new RecipeEndpoint().insert(r);
             Message message = new Message.Builder().addData("id", new RecipeEndpoint().insert(r).id.toString()).build();
             Sender sender = new Sender(API_KEY);

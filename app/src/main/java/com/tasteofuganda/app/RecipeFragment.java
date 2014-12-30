@@ -1,7 +1,6 @@
 package com.tasteofuganda.app;
 
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,9 +11,11 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.squareup.picasso.Picasso;
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
 
 /**
@@ -26,6 +27,10 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     private SimpleCursorAdapter recipeAdapter;
     private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.IMAGEKEY};
     private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_image};
+
+    public interface Callback{
+        public void onItemSelected(Long id);
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -43,13 +48,23 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             /** Binds the Cursor column defined by the specified index to the specified view */
             public boolean setViewValue(View view, Cursor cursor, int columnIndex){
                 if(view.getId() == R.id.recipe_image){
-                    ((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
+                    //((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
+                    Picasso.with(getActivity()).load("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)).into((ImageView)view);
                     return true; //true because the data was bound to the view
                 }
                 return false;
             }
         });
         listView.setAdapter(recipeAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor cursor = recipeAdapter.getCursor();
+                if(cursor!=null && cursor.moveToPosition(position)){
+                    ((Callback) getActivity()).onItemSelected(cursor.getLong(0));
+                }
+            }
+        });
         return rootView;
     }
 

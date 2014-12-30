@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
@@ -12,7 +13,7 @@ import com.tasteofuganda.sync.SyncAdapter;
 /**
  * Created by Timo on 12/29/14.
  */
-public class RecipeActivity extends ActionBarActivity{
+public class RecipeActivity extends ActionBarActivity implements RecipeFragment.Callback{
     private Boolean mTwoPane;
     public static final String AUTHORITY = "com.tasteofuganda.app.provider";
     // An account type, in the form of a domain name
@@ -20,11 +21,12 @@ public class RecipeActivity extends ActionBarActivity{
     // The account name
     public static final String ACCOUNT = "dummyaccount";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Account myAccount = CreateSyncAccount(RecipeActivity.this);
-        ContentResolver.setSyncAutomatically(myAccount, AUTHORITY, true);
+        //ContentResolver.setSyncAutomatically(myAccount, AUTHORITY, true);
 
 
         setContentView(R.layout.activity_browse_recipes);
@@ -70,4 +72,22 @@ public class RecipeActivity extends ActionBarActivity{
     }
 
 
+    @Override
+    public void onItemSelected(Long id) {
+        if(mTwoPane){
+            Bundle args = new Bundle();
+            args.putLong("id", id);
+            RecipeDetailFragment detailFragment = new RecipeDetailFragment();
+            detailFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.recipe_detail_container, detailFragment)
+                    .commit();
+
+        }else{
+            Intent i = new Intent(this, RecipeDetailActivity.class);
+            i.putExtra("id", id);
+            startActivity(i);
+        }
+
+    }
 }

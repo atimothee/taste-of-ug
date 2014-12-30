@@ -47,32 +47,26 @@ public class GcmIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-        // The getMessageType() intent parameter must be the intent you received
-        // in your BroadcastReceiver.
         String messageType = gcm.getMessageType(intent);
 
-        if (extras != null && !extras.isEmpty()) {  // has effect of unparcelling Bundle
-            // Since we're not using two way messaging, this is all we really to check for
+        if (extras != null && !extras.isEmpty()) {
+
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 Logger.getLogger("GCM_RECEIVED").log(Level.INFO, extras.toString());
 
-                showToast(extras.getString("message"));
-                sendNotification(extras.getString("message"));
-//                Bundle extras = new Bundle();
-//                extras.putParcelable(Globals.EXTRA_URI, changeUri);
-
-                ContentResolver.requestSync(account, AUTHORITY, extras);
                 Log.d(TAG, "Request sync called");
+                if(extras.getString("type")=="notification"){
+                    sendNotification(extras);
 
-
+                }else if(extras.getString("type")=="tickle"){
+                    ContentResolver.requestSync(account, AUTHORITY, extras);
+                }
             }
-
-
         }
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    private void sendNotification(String msg) {
+    private void sendNotification(Bundle extras) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
@@ -83,10 +77,10 @@ public class GcmIntentService extends IntentService {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("Recipe of the week")
+                        .setContentTitle(extras.getString("title"))
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(msg))
-                        .setContentText(msg);
+                                .bigText(extras.getString("message")))
+                        .setContentText(extras.getString("message"));
 
         mBuilder.setContentIntent(resultPendingIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());

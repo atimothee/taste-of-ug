@@ -85,52 +85,84 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String authority,
             ContentProviderClient provider,
             SyncResult syncResult) {
-    /*
-     * Put the data transfer code here.
-     */
         CategoryApi.Builder cBuilder = new CategoryApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
         CategoryApi categoryApi = cBuilder.build();
-        List<ContentValues> categoryCValuesList = new ArrayList<ContentValues>();
-        ContentValues categoryContentValues = null;
-        try {
-            List<Category> categories = categoryApi.list().execute().getItems();
-            for(Category c: categories){
-                categoryContentValues = new ContentValues();
+        RecipeApi.Builder builder = new RecipeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
+        RecipeApi recipeApi = builder.build();
+
+        if(extras.getString("resource_type")=="category"){
+            try {
+                Category c = categoryApi.get(extras.getLong("id")).execute();
+                ContentValues categoryContentValues = new ContentValues();
                 categoryContentValues.put(CategoryColumns._ID, c.getId());
                 categoryContentValues.put(CategoryColumns.NAME, c.getName());
                 categoryContentValues.put(CategoryColumns.COLOR, c.getColor());
-                categoryCValuesList.add(categoryContentValues);
+                provider.insert(CategoryColumns.CONTENT_URI, categoryContentValues);
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            provider.bulkInsert(CategoryColumns.CONTENT_URI, categoryCValuesList.toArray(new ContentValues[categoryCValuesList.size()]));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-
-        RecipeApi.Builder builder = new RecipeApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
-        RecipeApi recipeApi = builder.build();
-        //ContentValues[] cvArray = new ContentValues[]();
-        List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
-        ContentValues contentValues = null;
-        try {
-            List<Recipe> recipes = recipeApi.list().execute().getItems();
-
-            for (Recipe r: recipes){
-                contentValues = new ContentValues();
+        }else if(extras.getString("resource_type")=="recipe"){
+            try {
+                Recipe r = recipeApi.get(extras.getLong("id")).execute();
+                ContentValues contentValues = new ContentValues();
                 contentValues.put(RecipeColumns._ID, r.getId());
                 contentValues.put(RecipeColumns.RECIPE_NAME, r.getName());
                 contentValues.put(RecipeColumns.CATEGORYID, r.getCategoryId());
                 contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
                 contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                 contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
-                contentValuesList.add(contentValues);
-                Log.d(TAG, "Recipe "+r.getName()+" downloaded");
+                provider.insert(RecipeColumns.CONTENT_URI, contentValues);
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
-            provider.bulkInsert(RecipeColumns.CONTENT_URI, contentValuesList.toArray(new ContentValues[contentValuesList.size()]));
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else if(extras.getString("message")=="sync_all"){
+
+            List<ContentValues> categoryCValuesList = new ArrayList<ContentValues>();
+            ContentValues categoryContentValues = null;
+
+            try {
+                List<Category> categories = categoryApi.list().execute().getItems();
+                for(Category c: categories){
+                    categoryContentValues = new ContentValues();
+                    categoryContentValues.put(CategoryColumns._ID, c.getId());
+                    categoryContentValues.put(CategoryColumns.NAME, c.getName());
+                    categoryContentValues.put(CategoryColumns.COLOR, c.getColor());
+                    categoryCValuesList.add(categoryContentValues);
+                }
+                provider.bulkInsert(CategoryColumns.CONTENT_URI, categoryCValuesList.toArray(new ContentValues[categoryCValuesList.size()]));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
+            ContentValues contentValues = null;
+            try {
+                List<Recipe> recipes = recipeApi.list().execute().getItems();
+
+                for (Recipe r: recipes){
+                    contentValues = new ContentValues();
+                    contentValues.put(RecipeColumns._ID, r.getId());
+                    contentValues.put(RecipeColumns.RECIPE_NAME, r.getName());
+                    contentValues.put(RecipeColumns.CATEGORYID, r.getCategoryId());
+                    contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
+                    contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
+                    contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
+                    contentValuesList.add(contentValues);
+                    Log.d(TAG, "Recipe "+r.getName()+" downloaded");
+                }
+
+                provider.bulkInsert(RecipeColumns.CONTENT_URI, contentValuesList.toArray(new ContentValues[contentValuesList.size()]));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
+
+
+
+
 
 
     }

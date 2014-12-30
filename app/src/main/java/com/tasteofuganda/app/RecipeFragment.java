@@ -1,6 +1,7 @@
 package com.tasteofuganda.app;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
@@ -37,6 +39,16 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         recipeAdapter = new SimpleCursorAdapter(getActivity(),R.layout.list_item_recipe, null,COLUMNS, VIEW_IDS, 0);
         View rootView = inflater.inflate(R.layout.recipe_fragment, null);
         ListView listView = (ListView) rootView.findViewById(R.id.recipe_list);
+        recipeAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
+            /** Binds the Cursor column defined by the specified index to the specified view */
+            public boolean setViewValue(View view, Cursor cursor, int columnIndex){
+                if(view.getId() == R.id.recipe_image){
+                    ((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
+                    return true; //true because the data was bound to the view
+                }
+                return false;
+            }
+        });
         listView.setAdapter(recipeAdapter);
         return rootView;
     }

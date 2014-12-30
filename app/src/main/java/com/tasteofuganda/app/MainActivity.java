@@ -2,6 +2,7 @@ package com.tasteofuganda.app;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +25,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.tasteofuganda.app.provider.TasteOfUgProvider;
 import com.tasteofuganda.backend.recipeApi.model.Recipe;
 import com.tasteofuganda.backend.registration.Registration;
 
@@ -40,8 +42,6 @@ public class MainActivity extends ActionBarActivity {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final String SENDER_ID = "10592780844";
-    // The authority for the sync adapter's content provider
-    public static final String AUTHORITY = "com.tasteofuganda.data.provider";
     // An account type, in the form of a domain name
     public static final String ACCOUNT_TYPE = "example.com";
     // The account name
@@ -72,6 +72,12 @@ public class MainActivity extends ActionBarActivity {
             if (regid.isEmpty()) {
                 Log.d(TAG, "Registering in background...");
                 registerInBackground();
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                bundle.putString("message", "sync-all");
+                ContentResolver.requestSync(null, TasteOfUgProvider.AUTHORITY, bundle);
             }
             else {
                 Log.d(TAG, "Device already registered with no "+regid);
@@ -179,6 +185,7 @@ public class MainActivity extends ActionBarActivity {
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
+
             Log.i(TAG, "App version changed.");
             return "";
         }

@@ -98,6 +98,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
             mDescriptionView.setText(description);
             String ingredients = data.getString(3);
             ingredients = "Ingredients:\n"+ingredients;
+            mIngredientsView.setText(ingredients);
             String directions = data.getString(4);
             directions = "Directions:\n"+directions;
             mDirectionsView.setText(directions);

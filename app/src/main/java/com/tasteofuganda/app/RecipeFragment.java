@@ -52,6 +52,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             public boolean setViewValue(View view, Cursor cursor, int columnIndex){
                 if(view.getId() == R.id.recipe_image){
                     //((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
+
                     Picasso.with(getActivity()).load(IMAGE_BASE_URI + cursor.getString(columnIndex)).into((ImageView)view);
                     return true; //true because the data was bound to the view
                 }
@@ -75,21 +76,43 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] selectionArgs = null;
-        if(args != null && args.containsKey("category_id")){
-           selectionArgs  = new String[]{String.valueOf(args.getLong("category_id", 0))};
-        }else {
-            selectionArgs = new String[]{""};
+
+        if(args!=null && args.containsKey("is_search") && args.containsKey("query")){
+            if(args.getBoolean("is_search")){
+                String[] selectionArgs  = new String[]{args.getString("query"), args.getString("query"), args.getString("query")};
+                return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI,
+                        RecipeColumns.FULL_PROJECTION,
+                        RecipeColumns.DESCRIPTION+" like ?"+" or "+RecipeColumns.DIRECTIONS+" like ?"+" or "+RecipeColumns.RECIPE_NAME+" like ?",
+                        selectionArgs,
+                        null
+                        );
+            }
+        }else{
+            if(args != null && args.containsKey("category_id")){
+                String[] selectionArgs  = new String[]{String.valueOf(args.getLong("category_id", 0))};
+                return new CursorLoader(
+                        getActivity(),
+                        RecipeColumns.CONTENT_URI,
+                        RecipeColumns.FULL_PROJECTION,
+                        RecipeColumns.CATEGORYID+" = ?",
+                        selectionArgs,
+                        null
+                );
+            }else if(args != null && args.containsKey("category_id") && args.getString("category_id").equals("0")){
+                return new CursorLoader(
+                        getActivity(),
+                        RecipeColumns.CONTENT_URI,
+                        RecipeColumns.FULL_PROJECTION,
+                        null,
+                        null,
+                        null
+                );
+            }
         }
 
-        return new CursorLoader(
-                getActivity(),
-                RecipeColumns.CONTENT_URI,
-                RecipeColumns.FULL_PROJECTION,
-                RecipeColumns.CATEGORYID+" = ?",
-                selectionArgs,
-                null
-        );
+    //find way to return empty cursor
+    return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI, null, null, null, null);
+
     }
 
     @Override

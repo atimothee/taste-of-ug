@@ -55,6 +55,19 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
 
     @Override
     public void onItemSelected(Long id) {
+        if (mTwoPane) {
+            Bundle args = new Bundle();
+            args.putLong("id", id);
+            RecipeDetailFragment detailFragment = new RecipeDetailFragment();
+            detailFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.recipe_detail_container, detailFragment)
+                    .commit();
 
+        } else {
+            Intent i = new Intent(this, RecipeDetailActivity.class);
+            i.putExtra("id", id);
+            startActivity(i);
+        }
     }
 }

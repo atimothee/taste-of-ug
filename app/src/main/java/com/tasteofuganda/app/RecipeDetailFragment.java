@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -101,6 +104,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
             String imageKey = data.getString(6);
             Picasso.with(getActivity()).load(IMAGE_BASE_URI+imageKey).into(mImageView);
             mShareString = "I just checked out "+name+" recipe "+RECIPE_SHARE_HASHTAG;
+            getActivity().setTitle(name);
         }
     }
 

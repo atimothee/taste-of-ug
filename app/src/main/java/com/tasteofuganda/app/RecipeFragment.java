@@ -30,6 +30,8 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     private SimpleCursorAdapter recipeAdapter;
     private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEKEY};
     private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_description, R.id.recipe_image};
+    private int mPosition;
+    private ListView mListView;
 
     public interface Callback{
         public void onItemSelected(Long id);
@@ -46,7 +48,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
         recipeAdapter = new SimpleCursorAdapter(getActivity(),R.layout.list_item_recipe, null,COLUMNS, VIEW_IDS, 0);
         View rootView = inflater.inflate(R.layout.recipe_fragment, null);
-        ListView listView = (ListView) rootView.findViewById(R.id.recipe_list);
+        mListView = (ListView) rootView.findViewById(R.id.recipe_list);
         recipeAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
             /** Binds the Cursor column defined by the specified index to the specified view */
             public boolean setViewValue(View view, Cursor cursor, int columnIndex){
@@ -59,17 +61,21 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 return false;
             }
         });
-        listView.setAdapter(recipeAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setAdapter(recipeAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mPosition = position;
                 Cursor cursor = recipeAdapter.getCursor();
-                if(cursor!=null && cursor.moveToPosition(position)){
+                if (cursor != null && cursor.moveToPosition(position)) {
                     ((Callback) getActivity()).onItemSelected(cursor.getLong(0));
                     //Log.d(TAG, "clicked position "+position+" id "+cursor.getLong(0));
                 }
             }
         });
+        if(savedInstanceState!=null && savedInstanceState.containsKey("selection")){
+            mPosition = savedInstanceState.getInt("selection");
+        }
 
         return rootView;
     }
@@ -118,6 +124,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             recipeAdapter.swapCursor(data);
+            mListView.setSelection(mPosition);
     }
 
     @Override
@@ -129,5 +136,11 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         getLoaderManager().restartLoader(RECIPE_LOADER, args, this);
     }
 
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(mPosition != ListView.INVALID_POSITION){
+            outState.putInt("selection", mPosition);
+        }
+        super.onSaveInstanceState(outState);
+    }
 }

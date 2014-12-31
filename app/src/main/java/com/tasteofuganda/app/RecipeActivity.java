@@ -2,10 +2,12 @@ package com.tasteofuganda.app;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -37,6 +39,8 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     public static final String ACCOUNT = "dummyaccount";
     private Cursor categoryCursor;
     private SimpleCursorAdapter mSpinnerAdapter;
+    private int mSpinnerSelectedPosition;
+    private Spinner mSpinner;
 
 
     @Override
@@ -64,20 +68,21 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.actionbar_spinner);
-        spinner.setAdapter(mSpinnerAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSpinner = (Spinner) spinnerContainer.findViewById(R.id.actionbar_spinner);
+        mSpinner.setAdapter(mSpinnerAdapter);
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> spinner, View view, int position, long itemId) {
+                mSpinnerSelectedPosition = position;
                 RecipeFragment frag = (RecipeFragment) getSupportFragmentManager().findFragmentById(
                         R.id.fragment_recipe);
-                if(categoryCursor!=null) {
+                if (categoryCursor != null) {
                     categoryCursor.moveToPosition(position);
 
                     Bundle args = new Bundle();
                     args.putLong("category_id", categoryCursor.getLong(0));
                     frag.reloadRecipeFragmentFromArgs(args);
-                }else {
+                } else {
                     frag.reloadRecipeFragmentFromArgs(null);
                 }
 
@@ -88,12 +93,16 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
             }
         });
-        Log.d(TAG, "spinner adapter count " + mSpinnerAdapter.getCount());
+        Log.d(TAG, "mSpinner adapter count " + mSpinnerAdapter.getCount());
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setLogo(R.drawable.ic_launcher);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(spinnerContainer, lp);
+
+        if(savedInstanceState !=null && savedInstanceState.containsKey("selection")){
+            mSpinnerSelectedPosition = savedInstanceState.getInt("selection");
+        }
 
     }
 
@@ -154,6 +163,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     public void onLoadFinished(Loader loader, Object data) {
         categoryCursor = (Cursor) data;
         mSpinnerAdapter.swapCursor(categoryCursor);
+        mSpinner.setSelection(mSpinnerSelectedPosition);
         Log.d(TAG, "Cursor has been swapped");
     }
 
@@ -162,6 +172,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the options menu from XML
@@ -189,6 +200,14 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
         return true;
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(mSpinnerSelectedPosition != Spinner.INVALID_POSITION) {
+            outState.putInt("selection", mSpinnerSelectedPosition);
+        }
+        super.onSaveInstanceState(outState);
     }
 }
 

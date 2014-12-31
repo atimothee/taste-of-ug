@@ -8,6 +8,7 @@
         <item name="background">@color/app_orange</item>
         <item name="displayOptions">useLogo|showHome</item>
         <item name="logo">@drawable/app_logo</item>
+        <item name="android:textAppearance">?android:textAppearanceLarge</item>
     </style>
 
 </resources>

@@ -69,17 +69,25 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 }
             }
         });
+
         return rootView;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] selectionArgs = null;
+        if(args != null && args.containsKey("category_id")){
+           selectionArgs  = new String[]{String.valueOf(args.getLong("category_id", 0))};
+        }else {
+            selectionArgs = new String[]{""};
+        }
+
         return new CursorLoader(
                 getActivity(),
                 RecipeColumns.CONTENT_URI,
                 RecipeColumns.FULL_PROJECTION,
-                null,
-                null,
+                RecipeColumns.CATEGORYID+" = ?",
+                selectionArgs,
                 null
         );
     }
@@ -92,6 +100,10 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    public void reloadRecipeFragmentFromArgs(Bundle args) {
+        getLoaderManager().restartLoader(RECIPE_LOADER, args, this);
     }
 
 

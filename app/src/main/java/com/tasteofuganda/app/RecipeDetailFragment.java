@@ -76,7 +76,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
         Bundle args = getArguments();
         if(args!=null && args.containsKey("id") && mId!=null){
-            getLoaderManager().restartLoader(DETAIL_LOADER, null, this );
+            getLoaderManager().restartLoader(DETAIL_LOADER, args, this );
         }
     }
 

@@ -44,6 +44,8 @@ public class Upload extends HttpServlet{
             r.category = Key.create(Category.class, req.getParameter("categoryId"));
             r.description = req.getParameter("description");
             r.directions = new Text(req.getParameter("directions"));
+            r.ingredients = new Text(req.getParameter("ingredients"));
+            r.nutritionFacts = new Text(req.getParameter("nutritionFacts"));
             r.name = req.getParameter("name");
             ImagesService imagesService = ImagesServiceFactory.getImagesService();
             ServingUrlOptions sevOptions = ServingUrlOptions.Builder.withBlobKey(blobKeys.get(0));

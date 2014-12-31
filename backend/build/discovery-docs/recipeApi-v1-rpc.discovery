@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/vH23ZFzUch7us523X4lHnRgNAt0\"",
+ "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/OUqvhJqdt2H8Gh9NFfDZxKL-GFk\"",
  "discoveryVersion": "v1",
  "id": "recipeApi:v1",
  "name": "recipeApi",
@@ -126,10 +126,13 @@
      "$ref": "BlobKey"
     },
     "ingredients": {
-     "type": "string"
+     "$ref": "Text"
     },
     "name": {
      "type": "string"
+    },
+    "nutritionFacts": {
+     "$ref": "Text"
     },
     "youtube_url": {
      "$ref": "Link"
@@ -225,10 +228,13 @@
      "$ref": "BlobKey"
     },
     "ingredients": {
-     "type": "string"
+     "$ref": "Text"
     },
     "name": {
      "type": "string"
+    },
+    "nutritionFacts": {
+     "$ref": "Text"
     },
     "youtube_url": {
      "$ref": "Link"

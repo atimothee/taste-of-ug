@@ -113,6 +113,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(RecipeColumns.RECIPE_NAME, r.getName());
                 contentValues.put(RecipeColumns.CATEGORYID, r.getCategoryId());
                 contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
+                contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
                 contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                 contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
                 provider.insert(RecipeColumns.CONTENT_URI, contentValues);
@@ -152,7 +153,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     contentValues.put(RecipeColumns.CATEGORYID, r.getCategoryId());
                     contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
                     contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
-                    contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients());
+                    contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
                     contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
                     contentValuesList.add(contentValues);
                     Log.d(TAG, "Recipe " + r.getName() + " downloaded");

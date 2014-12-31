@@ -24,8 +24,9 @@ public class Recipe {
     Long id;
     String name;
     String description;
-    String ingredients;
+    Text ingredients;
     Text directions;
+    Text nutritionFacts;
     Link youtube_url;
 
     Key<Category> category;
@@ -97,12 +98,20 @@ public class Recipe {
         category = Key.create(Category.class, categoryId);
     }
 
-    public String getIngredients() {
+    public Text getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(String ingredients) {
+    public void setIngredients(Text ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public Text getNutritionFacts() {
+        return nutritionFacts;
+    }
+
+    public void setNutritionFacts(Text nutritionFacts) {
+        this.nutritionFacts = nutritionFacts;
     }
 }
 

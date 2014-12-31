@@ -7,11 +7,13 @@ import android.support.v7.app.ActionBarActivity;
  * Created by Timo on 12/30/14.
  */
 public class RecipeDetailActivity extends ActionBarActivity{
+    //add nutrition facts
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        //getSupportActionBar().set
         if(savedInstanceState == null){
             Long id = getIntent().getLongExtra("id", 0);
             Bundle args = new Bundle();

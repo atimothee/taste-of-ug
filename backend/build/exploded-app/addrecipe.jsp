@@ -27,6 +27,9 @@
 <div class="form-group">
 <label>Description</label><textarea class="form-control" name="description"></textarea>
 </div>
+        <div class="form-group">
+            <label>Ingredients</label><textarea class="form-control" name="ingredients"></textarea>
+        </div>
 <div class="form-group">
 <label>Directions</label><textarea class="form-control" name="directions"></textarea>
 </div>
@@ -40,6 +43,9 @@
 <div class="form-group">
 <input class="btn btn-primary" type="submit" value="Submit"/>
     </div>
+        <div class="form-group">
+            <label>Nutrition Facts</label><textarea class="form-control" name="nutritionFacts"></textarea>
+        </div>
 </form>
 </div>
 </div>

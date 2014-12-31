@@ -8,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,11 @@ import com.tasteofuganda.app.provider.recipe.RecipeColumns;
 public class RecipeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final int RECIPE_LOADER = 0;
+    private static final String IMAGE_BASE_URI = "http://tasteofuganda.appspot.com/serve?blob-key=";
+    private static final String TAG = RecipeFragment.class.getSimpleName();
     private SimpleCursorAdapter recipeAdapter;
-    private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.IMAGEKEY};
-    private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_image};
+    private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEKEY};
+    private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_description, R.id.recipe_image};
 
     public interface Callback{
         public void onItemSelected(Long id);
@@ -49,7 +52,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             public boolean setViewValue(View view, Cursor cursor, int columnIndex){
                 if(view.getId() == R.id.recipe_image){
                     //((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
-                    Picasso.with(getActivity()).load("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)).into((ImageView)view);
+                    Picasso.with(getActivity()).load(IMAGE_BASE_URI + cursor.getString(columnIndex)).into((ImageView)view);
                     return true; //true because the data was bound to the view
                 }
                 return false;
@@ -62,6 +65,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 Cursor cursor = recipeAdapter.getCursor();
                 if(cursor!=null && cursor.moveToPosition(position)){
                     ((Callback) getActivity()).onItemSelected(cursor.getLong(0));
+                    //Log.d(TAG, "clicked position "+position+" id "+cursor.getLong(0));
                 }
             }
         });

@@ -5,8 +5,6 @@
     android:name="com.tasteofuganda.app.RecipeFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
     tools:context="com.tasteofuganda.app.RecipeFragment"
     tools:layout="@android:layout/list_content"
     />

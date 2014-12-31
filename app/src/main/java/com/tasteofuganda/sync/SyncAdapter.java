@@ -152,6 +152,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     contentValues.put(RecipeColumns.CATEGORYID, r.getCategoryId());
                     contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
                     contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
+                    contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients());
                     contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
                     contentValuesList.add(contentValues);
                     Log.d(TAG, "Recipe " + r.getName() + " downloaded");

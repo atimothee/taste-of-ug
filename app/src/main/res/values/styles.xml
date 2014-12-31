@@ -2,7 +2,12 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <item name="actionBarStyle">@style/TasteOfUgandaActionBar</item>
+    </style>
+    <style name="TasteOfUgandaActionBar" parent="Widget.AppCompat.ActionBar.Solid">
+        <item name="background">@color/app_orange</item>
+        <item name="displayOptions">useLogo|showHome</item>
+        <item name="logo">@drawable/app_logo</item>
     </style>
 
 </resources>

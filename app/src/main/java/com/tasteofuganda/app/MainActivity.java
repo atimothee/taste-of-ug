@@ -9,8 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,6 +61,9 @@ public class MainActivity extends ActionBarActivity {
         mAccount = CreateSyncAccount(this);
         ContentResolver.setSyncAutomatically(mAccount, TasteOfUgProvider.AUTHORITY, true);
         setContentView(R.layout.activity_main);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+//        getSupportActionBar().setDisplayUseLogoEnabled(true);
         context = getApplicationContext();
 
         //new GcmRegistrationAsyncTask(this).execute();

@@ -1,0 +1,8 @@
+<cronentries>
+    <cron>
+        <url>/cron/notify</url>
+        <description>Send weekly notifications.</description>
+        <schedule>every day 23:59</schedule>
+        <timezone>Africa/Kampala</timezone>
+    </cron>
+</cronentries>

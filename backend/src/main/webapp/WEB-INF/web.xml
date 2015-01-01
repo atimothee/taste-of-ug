@@ -35,6 +35,10 @@
         <servlet-name>Serve</servlet-name>
         <servlet-class>com.tasteofuganda.backend.Serve</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Notify</servlet-name>
+        <servlet-class>com.tasteofuganda.backend.Notify</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>Upload</servlet-name>
@@ -44,6 +48,10 @@
     <servlet-mapping>
         <servlet-name>Serve</servlet-name>
         <url-pattern>/serve</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Notify</servlet-name>
+        <url-pattern>/cron/notify</url-pattern>
     </servlet-mapping>
 
 </web-app>

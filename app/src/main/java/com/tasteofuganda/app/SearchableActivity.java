@@ -10,6 +10,9 @@ import android.support.v7.app.ActionBarActivity;
  */
 public class SearchableActivity extends ActionBarActivity implements RecipeFragment.Callback{
 
+    private static final String DETAIL_ID_KEY = "id";
+    private static final String ARGS_IS_SEARCH_KEY = "is_search";
+    private static final String ARGS_QUERY_KEY = "query";
     private Boolean mTwoPane;
 
     @Override
@@ -45,8 +48,8 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
             RecipeFragment frag = (RecipeFragment) getSupportFragmentManager().findFragmentById(
                     R.id.fragment_recipe);
                 Bundle args = new Bundle();
-                args.putBoolean("is_search", true);
-                args.putString("query", query);
+                args.putBoolean(ARGS_IS_SEARCH_KEY, true);
+                args.putString(ARGS_QUERY_KEY, query);
                 frag.reloadRecipeFragmentFromArgs(args);
             getSupportActionBar().setTitle("Results for '"+query+"'");
         }
@@ -57,7 +60,7 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
     public void onItemSelected(Long id) {
         if (mTwoPane) {
             Bundle args = new Bundle();
-            args.putLong("id", id);
+            args.putLong(DETAIL_ID_KEY, id);
             RecipeDetailFragment detailFragment = new RecipeDetailFragment();
             detailFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction()
@@ -66,7 +69,7 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
 
         } else {
             Intent i = new Intent(this, RecipeDetailActivity.class);
-            i.putExtra("id", id);
+            i.putExtra(DETAIL_ID_KEY, id);
             startActivity(i);
         }
     }

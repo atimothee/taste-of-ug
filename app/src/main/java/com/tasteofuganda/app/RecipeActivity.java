@@ -55,6 +55,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private static final String SENDER_ID = "10592780844";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final int CATEGORY_LOADER = 3;
+    private static final String DETAIL_ID_KEY = "id";
+    private static final String INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY = "selected_id";//for when fragment is called from notification
+    private static final String ARGS_CATEGORY_ID_KEY = "category_id";
+    private static final String SAVED_STATE_SPINNER_SELECTION_KEY = "selection";
     // An account type, in the form of a domain name
     public static final String ACCOUNT_TYPE = "com.tasteofuganda.datasync";
     // The account name
@@ -62,6 +66,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private Cursor categoryCursor;
     private SimpleCursorAdapter mSpinnerAdapter;
     private int mSpinnerSelectedPosition;
+    private Long mSelectedId;//id of recipe to select -- if activity is opened from notification
     private Spinner mSpinner;
     private GoogleCloudMessaging gcm;
     private Context context;
@@ -124,7 +129,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
                     categoryCursor.moveToPosition(position);
 
                     Bundle args = new Bundle();
-                    args.putLong("category_id", categoryCursor.getLong(0));
+                    args.putLong(ARGS_CATEGORY_ID_KEY, categoryCursor.getLong(categoryCursor.getColumnIndex(CategoryColumns._ID)));
                     frag.reloadRecipeFragmentFromArgs(args);
                 } else {
                     frag.reloadRecipeFragmentFromArgs(null);
@@ -144,8 +149,15 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(spinnerContainer, lp);
 
-        if(savedInstanceState !=null && savedInstanceState.containsKey("selection")){
-            mSpinnerSelectedPosition = savedInstanceState.getInt("selection");
+        if(getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+            mSelectedId = getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0);
+        }
+
+        if(savedInstanceState !=null && savedInstanceState.containsKey(SAVED_STATE_SPINNER_SELECTION_KEY)){
+            mSpinnerSelectedPosition = savedInstanceState.getInt(SAVED_STATE_SPINNER_SELECTION_KEY);
+        }
+        if(savedInstanceState !=null && savedInstanceState.containsKey(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+            mSelectedId = savedInstanceState.getLong(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY);
         }
 
     }
@@ -202,7 +214,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     public void onItemSelected(Long id) {
         if (mTwoPane) {
             Bundle args = new Bundle();
-            args.putLong("id", id);
+            args.putLong(DETAIL_ID_KEY, id);
+            if(mSelectedId !=null && mSelectedId!=0){
+                args.putLong(DETAIL_ID_KEY, mSelectedId);
+            }
             RecipeDetailFragment detailFragment = new RecipeDetailFragment();
             detailFragment.setArguments(args);
             getSupportFragmentManager().beginTransaction()
@@ -211,7 +226,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
         } else {
             Intent i = new Intent(this, RecipeDetailActivity.class);
-            i.putExtra("id", id);
+            i.putExtra(DETAIL_ID_KEY, id);
+            if(mSelectedId !=null && mSelectedId!=0){
+                 i.putExtra(DETAIL_ID_KEY, mSelectedId);
+            }
             startActivity(i);
         }
 
@@ -227,6 +245,9 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         categoryCursor = (Cursor) data;
         mSpinnerAdapter.swapCursor(categoryCursor);
         mSpinner.setSelection(mSpinnerSelectedPosition);
+        if(getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+            mSpinner.setSelection(0); //set spinner to show all
+        }
         Log.d(TAG, "Cursor has been swapped");
     }
 
@@ -268,7 +289,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(mSpinnerSelectedPosition != Spinner.INVALID_POSITION) {
-            outState.putInt("selection", mSpinnerSelectedPosition);
+            outState.putInt(SAVED_STATE_SPINNER_SELECTION_KEY, mSpinnerSelectedPosition);
+        }
+        if(getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+            outState.putLong(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0));
         }
         super.onSaveInstanceState(outState);
     }

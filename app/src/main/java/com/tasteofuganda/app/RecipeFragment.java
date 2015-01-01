@@ -28,7 +28,11 @@ import java.util.ArrayList;
 public class RecipeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final int RECIPE_LOADER = 0;
-    //private static final String IMAGE_BASE_URI = "http://tasteofuganda.appspot.com/serve?blob-key=";
+    private static final String SAVED_STATE_SELECTION_KEY = "selection";
+    private static final String ARGS_SELECTED_ID_KEY = "selected_id";//for when fragment is called from notification
+    private static final String ARGS_CATEGORY_ID_KEY = "category_id";
+    private static final String ARGS_IS_SEARCH_KEY = "is_search";
+    private static final String ARGS_QUERY_KEY = "query";
     private static final String TAG = RecipeFragment.class.getSimpleName();
     private SimpleCursorAdapter recipeAdapter;
     private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEURL};
@@ -55,6 +59,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         recipeAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
             /** Binds the Cursor column defined by the specified index to the specified view */
             public boolean setViewValue(View view, Cursor cursor, int columnIndex){
+                view.setTag(1, cursor.getLong(cursor.getColumnIndex(RecipeColumns._ID)));
                 if(view.getId() == R.id.recipe_image){
                     //((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
 
@@ -72,12 +77,11 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 Cursor cursor = recipeAdapter.getCursor();
                 if (cursor != null && cursor.moveToPosition(position)) {
                     ((Callback) getActivity()).onItemSelected(cursor.getLong(0));
-                    //Log.d(TAG, "clicked position "+position+" id "+cursor.getLong(0));
                 }
             }
         });
-        if(savedInstanceState!=null && savedInstanceState.containsKey("selection")){
-            mPosition = savedInstanceState.getInt("selection");
+        if(savedInstanceState!=null && savedInstanceState.containsKey(SAVED_STATE_SELECTION_KEY)){
+            mPosition = savedInstanceState.getInt(SAVED_STATE_SELECTION_KEY);
         }
 
         return rootView;
@@ -86,9 +90,9 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        if(args!=null && args.containsKey("is_search") && args.containsKey("query")){
-            if(args.getBoolean("is_search")){
-                String[] selectionArgs  = new String[]{args.getString("query"), args.getString("query"), args.getString("query")};
+        if(args!=null && args.containsKey(ARGS_IS_SEARCH_KEY) && args.containsKey(ARGS_QUERY_KEY)){
+            if(args.getBoolean(ARGS_IS_SEARCH_KEY)){
+                String[] selectionArgs  = new String[]{args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY)};
                 return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI,
                         RecipeColumns.FULL_PROJECTION,
                         RecipeColumns.DESCRIPTION+" like ?"+" or "+RecipeColumns.DIRECTIONS+" like ?"+" or "+RecipeColumns.RECIPE_NAME+" like ?",
@@ -97,8 +101,17 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                         );
             }
         }else{
-            if(args != null && args.containsKey("category_id")){
-                String[] selectionArgs  = new String[]{String.valueOf(args.getLong("category_id", 0))};
+            if(args != null && args.containsKey(ARGS_CATEGORY_ID_KEY) && args.getLong(ARGS_CATEGORY_ID_KEY)==0){
+                return new CursorLoader(
+                        getActivity(),
+                        RecipeColumns.CONTENT_URI,
+                        RecipeColumns.FULL_PROJECTION,
+                        null,
+                        null,
+                        null
+                );
+            }else if(args != null && args.containsKey(ARGS_CATEGORY_ID_KEY)){
+                String[] selectionArgs  = new String[]{String.valueOf(args.getLong(ARGS_CATEGORY_ID_KEY, 0))};
                 return new CursorLoader(
                         getActivity(),
                         RecipeColumns.CONTENT_URI,
@@ -107,7 +120,9 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                         selectionArgs,
                         null
                 );
-            }else if(args != null && args.containsKey("category_id") && args.getString("category_id").equals("0")){
+            }
+            /*for just in case category id hasn't yet been set*/
+            else{
                 return new CursorLoader(
                         getActivity(),
                         RecipeColumns.CONTENT_URI,
@@ -126,17 +141,18 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            recipeAdapter.swapCursor(data);
-        if(getArguments().containsKey("selected_id")){
+        recipeAdapter.swapCursor(data);
+
+        if(getArguments().containsKey(ARGS_SELECTED_ID_KEY)){
             ArrayList<View> views = new ArrayList<>();
             mListView.reclaimViews(views);
             for(View v: views){
-                TextView tv = (TextView)v.findViewById(R.id.recipe_title);
-                Long.valueOf (tv.toString());
+                if(v.getTag(1) == Long.valueOf(getArguments().getString(ARGS_SELECTED_ID_KEY))){
+                    mPosition = mListView.getPositionForView(v);
+                }
             }
-           // mListView.getPositionForView();
         }
-            mListView.setSelection(mPosition);
+        mListView.setSelection(mPosition);
     }
 
     @Override
@@ -151,7 +167,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if(mPosition != ListView.INVALID_POSITION){
-            outState.putInt("selection", mPosition);
+            outState.putInt(SAVED_STATE_SELECTION_KEY, mPosition);
         }
         super.onSaveInstanceState(outState);
     }

@@ -15,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
+
+import java.util.ArrayList;
 
 /**
  * Created by Timo on 12/24/14.
@@ -124,6 +127,15 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             recipeAdapter.swapCursor(data);
+        if(getArguments().containsKey("selected_id")){
+            ArrayList<View> views = new ArrayList<>();
+            mListView.reclaimViews(views);
+            for(View v: views){
+                TextView tv = (TextView)v.findViewById(R.id.recipe_title);
+                Long.valueOf (tv.toString());
+            }
+           // mListView.getPositionForView();
+        }
             mListView.setSelection(mPosition);
     }
 

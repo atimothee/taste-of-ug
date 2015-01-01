@@ -33,7 +33,8 @@ public class Notify extends HttpServlet{
             builder.addData("id", r.id.toString());
             builder.addData("type", "notification");
             builder.addData("resource_type", "recipe");
-            builder.addData("message", "Your Recipe for the week - "+r.getName());
+            builder.addData("title", "Your Recipe for the week");
+            builder.addData("message", r.getName()+" - "+r.getDescription());
             Message message = builder.build();
             Sender sender = new Sender(API_KEY);
             List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).list();

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.tasteofuganda.app.MainActivity;
 import com.tasteofuganda.app.R;
+import com.tasteofuganda.app.RecipeActivity;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,7 +70,8 @@ public class GcmIntentService extends IntentService {
     private void sendNotification(Bundle extras) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent resultIntent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent resultIntent = new Intent(getApplicationContext(), RecipeActivity.class);
+        resultIntent.putExtra("selected_id", extras.getString("id"));
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);

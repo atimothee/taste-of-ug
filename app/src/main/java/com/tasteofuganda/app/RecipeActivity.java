@@ -74,8 +74,8 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_recipes);
-        context = getApplicationContext();
-        mAccount = CreateSyncAccount(RecipeActivity.this);
+        context = RecipeActivity.this;
+        initializeSyncAdapter();
         if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
@@ -83,11 +83,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
             if (regid.isEmpty()) {
                 Log.d(TAG, "Registering in background...");
                 registerInBackground();
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                bundle.putString("message", "sync-all");
-                ContentResolver.requestSync(mAccount, TasteOfUgProvider.AUTHORITY, bundle);
+                syncImmediately();
             }
             else {
                 Log.d(TAG, "Device already registered with no "+regid);
@@ -96,8 +92,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
 
-
-        ContentResolver.setSyncAutomatically(mAccount, TasteOfUgProvider.AUTHORITY, true);
         getSupportLoaderManager().initLoader(CATEGORY_LOADER, null, RecipeActivity.this);
 
 
@@ -156,6 +150,14 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
     }
 
+    private void syncImmediately(){
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        bundle.putString("message", "sync-all");
+        ContentResolver.requestSync(mAccount, TasteOfUgProvider.AUTHORITY, bundle);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -188,6 +190,11 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
              */
         }
         return newAccount;
+    }
+
+    private void initializeSyncAdapter(){
+        mAccount = CreateSyncAccount(RecipeActivity.this);
+        ContentResolver.setSyncAutomatically(mAccount, TasteOfUgProvider.AUTHORITY, true);
     }
 
 

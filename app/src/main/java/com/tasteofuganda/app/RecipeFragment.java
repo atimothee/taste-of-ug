@@ -25,10 +25,10 @@ import com.tasteofuganda.app.provider.recipe.RecipeColumns;
 public class RecipeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private static final int RECIPE_LOADER = 0;
-    private static final String IMAGE_BASE_URI = "http://tasteofuganda.appspot.com/serve?blob-key=";
+    //private static final String IMAGE_BASE_URI = "http://tasteofuganda.appspot.com/serve?blob-key=";
     private static final String TAG = RecipeFragment.class.getSimpleName();
     private SimpleCursorAdapter recipeAdapter;
-    private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEKEY};
+    private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEURL};
     private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_description, R.id.recipe_image};
     private int mPosition;
     private ListView mListView;
@@ -55,7 +55,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 if(view.getId() == R.id.recipe_image){
                     //((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
 
-                    Picasso.with(getActivity()).load(IMAGE_BASE_URI + cursor.getString(columnIndex)).into((ImageView)view);
+                    Picasso.with(getActivity()).load(cursor.getString(columnIndex)).into((ImageView)view);
                     return true; //true because the data was bound to the view
                 }
                 return false;

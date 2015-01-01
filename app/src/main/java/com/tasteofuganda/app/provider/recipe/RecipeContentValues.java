@@ -91,4 +91,15 @@ public class RecipeContentValues extends AbstractContentValues {
         return this;
     }
 
+
+    public RecipeContentValues putImageurl(String value) {
+        mContentValues.put(RecipeColumns.IMAGEURL, value);
+        return this;
+    }
+
+    public RecipeContentValues putImageurlNull() {
+        mContentValues.putNull(RecipeColumns.IMAGEURL);
+        return this;
+    }
+
 }

@@ -22,6 +22,7 @@ public class RecipeColumns implements BaseColumns {
     public static final String DIRECTIONS = "directions";
     public static final String CATEGORYID = "categoryid";
     public static final String IMAGEKEY = "imagekey";
+    public static final String IMAGEURL = "imageurl";
 
     public static final String DEFAULT_ORDER = TABLE_NAME + "." +_ID;
 
@@ -33,7 +34,8 @@ public class RecipeColumns implements BaseColumns {
             TABLE_NAME + "." + INGREDIENTS,
             TABLE_NAME + "." + DIRECTIONS,
             TABLE_NAME + "." + CATEGORYID,
-            TABLE_NAME + "." + IMAGEKEY
+            TABLE_NAME + "." + IMAGEKEY,
+            TABLE_NAME + "." + IMAGEURL
     };
     // @formatter:on
 
@@ -46,6 +48,7 @@ public class RecipeColumns implements BaseColumns {
         ALL_COLUMNS.add(DIRECTIONS);
         ALL_COLUMNS.add(CATEGORYID);
         ALL_COLUMNS.add(IMAGEKEY);
+        ALL_COLUMNS.add(IMAGEURL);
     }
 
     public static boolean hasColumns(String[] projection) {

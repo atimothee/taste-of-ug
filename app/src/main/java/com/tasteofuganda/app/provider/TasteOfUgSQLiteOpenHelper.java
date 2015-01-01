@@ -39,7 +39,8 @@ public class TasteOfUgSQLiteOpenHelper extends SQLiteOpenHelper {
             + RecipeColumns.INGREDIENTS + " TEXT, "
             + RecipeColumns.DIRECTIONS + " TEXT, "
             + RecipeColumns.CATEGORYID + " INTEGER, "
-            + RecipeColumns.IMAGEKEY + " TEXT "
+            + RecipeColumns.IMAGEKEY + " TEXT, "
+            + RecipeColumns.IMAGEURL + " TEXT "
             + ", CONSTRAINT fk_categoryid FOREIGN KEY (categoryid) REFERENCES category (_id) ON DELETE CASCADE"
             + " );";
 

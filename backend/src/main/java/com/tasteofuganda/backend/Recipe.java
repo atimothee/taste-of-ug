@@ -28,6 +28,7 @@ public class Recipe {
     Text directions;
     Text nutritionFacts;
     Link youtube_url;
+    String image_url;
 
     Key<Category> category;
     BlobKey image;
@@ -112,6 +113,14 @@ public class Recipe {
 
     public void setNutritionFacts(Text nutritionFacts) {
         this.nutritionFacts = nutritionFacts;
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
     }
 }
 

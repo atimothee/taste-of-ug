@@ -13,6 +13,7 @@ import com.google.appengine.api.images.ServingUrlOptions;
 import com.googlecode.objectify.Key;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,16 +52,20 @@ public class Upload extends HttpServlet{
             ServingUrlOptions sevOptions = ServingUrlOptions.Builder.withBlobKey(blobKeys.get(0));
             res.sendRedirect(imagesService.getServingUrl(sevOptions));
             r.image = blobKeys.get(0);
-            //r.thumbnail = imagesService.getServingUrl(sevOptions);
-            //r.large_image = imagesService.getServingUrl(sevOptions);
-            //new RecipeEndpoint().insert(r);
-            Message message = new Message.Builder().addData("id", new RecipeEndpoint().insert(r).id.toString()).build();
+            r.image_url = imagesService.getServingUrl(sevOptions);
+            Message.Builder builder = new Message.Builder();
+            builder.addData("id", new RecipeEndpoint().insert(r).id.toString());
+            builder.addData("type", "tickle");
+            builder.addData("resource_type", "recipe");
+            Message message = builder.build();
             Sender sender = new Sender(API_KEY);
             List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).list();
+            List<String> regIds = new ArrayList<String>();
             for (RegistrationRecord record : records) {
-                sender.send(message, record.getRegId(), 5);
+                regIds.add(record.getRegId());
             }
-            res.sendRedirect("/serve?blob-key=" + blobKeys.get(0).getKeyString());
+            sender.send(message, regIds, 10);
+            res.sendRedirect(r.image_url);
         }
     }
 

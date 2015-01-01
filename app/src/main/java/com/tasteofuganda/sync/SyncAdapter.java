@@ -24,7 +24,9 @@ import com.tasteofuganda.app.provider.category.CategoryColumns;
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
 import com.tasteofuganda.backend.categoryApi.CategoryApi;
 import com.tasteofuganda.backend.categoryApi.model.Category;
+import com.tasteofuganda.backend.categoryApi.model.CollectionResponseCategory;
 import com.tasteofuganda.backend.recipeApi.RecipeApi;
+import com.tasteofuganda.backend.recipeApi.model.CollectionResponseRecipe;
 import com.tasteofuganda.backend.recipeApi.model.Recipe;
 
 import java.io.IOException;
@@ -85,7 +87,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             String authority,
             ContentProviderClient provider,
             SyncResult syncResult) {
-        Log.d(TAG, "Perform sync called..."+extras.toString());
+        Log.d(TAG, "Perform sync called...with extras "+extras.toString());
 
         CategoryApi.Builder cBuilder = new CategoryApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null);
         CategoryApi categoryApi = cBuilder.build();
@@ -100,7 +102,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 categoryContentValues.put(CategoryColumns._ID, c.getId());
                 categoryContentValues.put(CategoryColumns.NAME, c.getName());
                 categoryContentValues.put(CategoryColumns.COLOR, c.getColor());
-                provider.insert(CategoryColumns.CONTENT_URI, categoryContentValues);
+
+                try{
+                    provider.update(CategoryColumns.CONTENT_URI, categoryContentValues,
+                            "_id = ?", new String[]{c.getId().toString()});
+                }catch (Exception e){
+                    e.printStackTrace();
+                    provider.insert(CategoryColumns.CONTENT_URI, categoryContentValues);
+                }
+
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -116,7 +126,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
                 contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                 contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
-                provider.insert(RecipeColumns.CONTENT_URI, contentValues);
+                //contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
+                try{
+                    provider.update(RecipeColumns.CONTENT_URI, contentValues,
+                            "_id = ?", new String[]{r.getId().toString()});
+                }catch (Exception e){
+                    e.printStackTrace();
+                    provider.insert(RecipeColumns.CONTENT_URI, contentValues);
+                }
+
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -127,8 +145,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             List<ContentValues> categoryCValuesList = new ArrayList<ContentValues>();
             ContentValues categoryContentValues = null;
 
+
             try {
-                List<Category> categories = categoryApi.list().execute().getItems();
+                List<Category> categories = new ArrayList<Category>();
+                CollectionResponseCategory responseCategory = categoryApi.list().execute();
+                categories.addAll(responseCategory.getItems());
+                do{
+                    Log.d(TAG, "Next page token is not empty");
+                    CategoryApi.List list = categoryApi.list();
+                    list.setCursor(responseCategory.getNextPageToken());
+                    responseCategory = categoryApi.list().execute();
+                    categories.addAll(responseCategory.getItems());
+                }while (!responseCategory.getNextPageToken().isEmpty());
+
                 for (Category c : categories) {
                     categoryContentValues = new ContentValues();
                     categoryContentValues.put(CategoryColumns._ID, c.getId());
@@ -144,7 +173,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
             ContentValues contentValues = null;
             try {
-                List<Recipe> recipes = recipeApi.list().execute().getItems();
+                List<Recipe> recipes = new ArrayList<Recipe>();
+                CollectionResponseRecipe responseRecipe = recipeApi.list().execute();
+                recipes.addAll(responseRecipe.getItems());
+                do{
+                    Log.d(TAG, "Next page token is not empty");
+                    CategoryApi.List list = categoryApi.list();
+                    list.setCursor(responseRecipe.getNextPageToken());
+                    responseRecipe = recipeApi.list().execute();
+                    recipes.addAll(responseRecipe.getItems());
+                }while (!responseRecipe.getNextPageToken().isEmpty());
 
                 for (Recipe r : recipes) {
                     contentValues = new ContentValues();
@@ -155,6 +193,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                     contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
                     contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
+                    //contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
                     contentValuesList.add(contentValues);
                     Log.d(TAG, "Recipe " + r.getName() + " downloaded");
                 }

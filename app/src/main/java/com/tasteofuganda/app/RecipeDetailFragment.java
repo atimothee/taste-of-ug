@@ -38,7 +38,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     private static final int DETAIL_LOADER = 1;
     private static final String RECIPE_SHARE_HASHTAG = "#TasteOfUgApp";
     private static final String TAG = RecipeDetailFragment.class.getSimpleName();
-    private static final  String IMAGE_BASE_URI = "http://tasteofuganda.appspot.com/serve?blob-key=";
+    //private static final  String IMAGE_BASE_URI = "http://tasteofuganda.appspot.com/serve?blob-key=";
     private Long mId;
     private String mShareString;
     private Cursor mCursor;
@@ -92,18 +92,18 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()){
-            String name = data.getString(1);
+            String name = data.getString(data.getColumnIndex(RecipeColumns.RECIPE_NAME));
             mTitleView.setText(name);
-            String description = data.getString(2);
+            String description = data.getString(data.getColumnIndex(RecipeColumns.DESCRIPTION));
             mDescriptionView.setText(description);
-            String ingredients = data.getString(3);
+            String ingredients = data.getString(data.getColumnIndex(RecipeColumns.INGREDIENTS));
             ingredients = "Ingredients:\n"+ingredients;
             mIngredientsView.setText(ingredients);
-            String directions = data.getString(4);
+            String directions = data.getString(data.getColumnIndex(RecipeColumns.DIRECTIONS));
             directions = "Directions:\n"+directions;
             mDirectionsView.setText(directions);
-            String imageKey = data.getString(6);
-            Picasso.with(getActivity()).load(IMAGE_BASE_URI+imageKey).into(mImageView);
+            String imageUrl = data.getString(data.getColumnIndex(RecipeColumns.IMAGEURL));
+            Picasso.with(getActivity()).load(imageUrl).into(mImageView);
             mShareString = "I just checked out "+name+" recipe "+RECIPE_SHARE_HASHTAG;
             getActivity().setTitle(name);
         }

@@ -69,6 +69,15 @@ public class RecipeCursor extends AbstractCursor {
     }
 
     /**
+     * Get the {@code imageurl} value.
+     * Can be {@code null}.
+     */
+    public String getImageurl() {
+        Integer index = getCachedColumnIndexOrThrow(RecipeColumns.IMAGEURL);
+        return getString(index);
+    }
+
+    /**
      * Get the {@code name} value.
      * Can be {@code null}.
      */

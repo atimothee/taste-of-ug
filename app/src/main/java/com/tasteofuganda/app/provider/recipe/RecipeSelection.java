@@ -157,4 +157,19 @@ public class RecipeSelection extends AbstractSelection<RecipeSelection> {
         addLike(RecipeColumns.IMAGEKEY, value);
         return this;
     }
+
+    public RecipeSelection imageurl(String... value) {
+        addEquals(RecipeColumns.IMAGEURL, value);
+        return this;
+    }
+
+    public RecipeSelection imageurlNot(String... value) {
+        addNotEquals(RecipeColumns.IMAGEURL, value);
+        return this;
+    }
+
+    public RecipeSelection imageurlLike(String... value) {
+        addLike(RecipeColumns.IMAGEURL, value);
+        return this;
+    }
 }

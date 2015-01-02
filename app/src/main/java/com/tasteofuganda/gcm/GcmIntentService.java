@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -55,11 +57,14 @@ public class GcmIntentService extends IntentService {
             if (GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 Logger.getLogger("GCM_RECEIVED").log(Level.INFO, extras.toString());
 
-                Log.d(TAG, "Request sync called");
-                if(extras.getString("type")=="notification"){
+                Log.d(TAG, "Request sync called via GCM");
+                if(extras.containsKey("type") && extras.getString("type").equalsIgnoreCase("notification")){
+                    //extras.putLong("id", Long.valueOf(extras.getString("id")));
                     sendNotification(extras);
+                    Log.d(TAG, "send notification called");
 
-                }else if(extras.getString("type")=="tickle"){
+                }else if(extras.containsKey("type") && extras.getString("type")=="tickle"){
+                    extras.putLong("id", Long.valueOf(extras.getString("id")));
                     ContentResolver.requestSync(account, AUTHORITY, extras);
                 }
             }
@@ -71,10 +76,11 @@ public class GcmIntentService extends IntentService {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent resultIntent = new Intent(getApplicationContext(), RecipeActivity.class);
-        resultIntent.putExtra("selected_id", extras.getString("id"));
+        resultIntent.putExtra("selected_id", Long.valueOf(extras.getString("id")));
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
@@ -82,6 +88,8 @@ public class GcmIntentService extends IntentService {
                         .setContentTitle(extras.getString("title"))
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(extras.getString("message")))
+                        .setAutoCancel(true)
+                        .setSound(uri)
                         .setContentText(extras.getString("message"));
 
         mBuilder.setContentIntent(resultPendingIntent);

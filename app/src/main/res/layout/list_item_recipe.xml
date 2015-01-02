@@ -17,7 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#6000"
+        android:background="#fdf0e4"
+        android:id="@+id/recipe_bg"
         >
 
     <TextView

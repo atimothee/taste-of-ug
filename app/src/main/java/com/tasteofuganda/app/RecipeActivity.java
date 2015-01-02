@@ -38,9 +38,13 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.tasteofuganda.app.provider.TasteOfUgProvider;
 import com.tasteofuganda.app.provider.category.CategoryColumns;
+import com.tasteofuganda.app.provider.recipe.RecipeColumns;
+import com.tasteofuganda.backend.categoryApi.CategoryApi;
 import com.tasteofuganda.backend.registration.Registration;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,11 +91,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
             if (regid.isEmpty()) {
                 Log.d(TAG, "Registering in background...");
-                registerInBackground();
                 syncImmediately();
-            }
-            else {
-                Log.d(TAG, "Device already registered with no "+regid);
+                new RegisterAsyncTask().execute();
+            } else {
+                Log.d(TAG, "Device already registered with no " + regid);
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
@@ -122,14 +125,18 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> spinner, View view, int position, long itemId) {
+                Log.d(TAG, "on spinner item selected has been called");
                 mSpinnerSelectedPosition = position;
                 RecipeFragment frag = (RecipeFragment) getSupportFragmentManager().findFragmentById(
                         R.id.fragment_recipe);
                 if (categoryCursor != null) {
                     categoryCursor.moveToPosition(position);
-
                     Bundle args = new Bundle();
                     args.putLong(ARGS_CATEGORY_ID_KEY, categoryCursor.getLong(categoryCursor.getColumnIndex(CategoryColumns._ID)));
+                    if(mSelectedId!=null && mSelectedId!=0){
+                        args.putLong(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, mSelectedId);
+                        Log.d(TAG, INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY+" "+ mSelectedId+" has been added to arguments");
+                    }
                     frag.reloadRecipeFragmentFromArgs(args);
                 } else {
                     frag.reloadRecipeFragmentFromArgs(null);
@@ -149,20 +156,21 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(spinnerContainer, lp);
 
-        if(getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+        if (getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)) {
+            Log.d(TAG, "intent has extra "+INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY+", value is "+getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0));
             mSelectedId = getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0);
         }
 
-        if(savedInstanceState !=null && savedInstanceState.containsKey(SAVED_STATE_SPINNER_SELECTION_KEY)){
+        if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_STATE_SPINNER_SELECTION_KEY)) {
             mSpinnerSelectedPosition = savedInstanceState.getInt(SAVED_STATE_SPINNER_SELECTION_KEY);
         }
-        if(savedInstanceState !=null && savedInstanceState.containsKey(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+        if (savedInstanceState != null && savedInstanceState.containsKey(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)) {
             mSelectedId = savedInstanceState.getLong(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY);
         }
 
     }
 
-    private void syncImmediately(){
+    private void syncImmediately() {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
@@ -204,7 +212,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         return newAccount;
     }
 
-    private void initializeSyncAdapter(){
+    private void initializeSyncAdapter() {
         mAccount = CreateSyncAccount(RecipeActivity.this);
         ContentResolver.setSyncAutomatically(mAccount, TasteOfUgProvider.AUTHORITY, true);
     }
@@ -215,7 +223,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         if (mTwoPane) {
             Bundle args = new Bundle();
             args.putLong(DETAIL_ID_KEY, id);
-            if(mSelectedId !=null && mSelectedId!=0){
+            if (mSelectedId != null && mSelectedId != 0) {
                 args.putLong(DETAIL_ID_KEY, mSelectedId);
             }
             RecipeDetailFragment detailFragment = new RecipeDetailFragment();
@@ -227,8 +235,8 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         } else {
             Intent i = new Intent(this, RecipeDetailActivity.class);
             i.putExtra(DETAIL_ID_KEY, id);
-            if(mSelectedId !=null && mSelectedId!=0){
-                 i.putExtra(DETAIL_ID_KEY, mSelectedId);
+            if (mSelectedId != null && mSelectedId != 0) {
+                i.putExtra(DETAIL_ID_KEY, mSelectedId);
             }
             startActivity(i);
         }
@@ -245,7 +253,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         categoryCursor = (Cursor) data;
         mSpinnerAdapter.swapCursor(categoryCursor);
         mSpinner.setSelection(mSpinnerSelectedPosition);
-        if(getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+        if (mSelectedId!=null) {
             mSpinner.setSelection(0); //set spinner to show all
         }
         Log.d(TAG, "Cursor has been swapped");
@@ -288,10 +296,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if(mSpinnerSelectedPosition != Spinner.INVALID_POSITION) {
+        if (mSpinnerSelectedPosition != Spinner.INVALID_POSITION) {
             outState.putInt(SAVED_STATE_SPINNER_SELECTION_KEY, mSpinnerSelectedPosition);
         }
-        if(getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)){
+        if (getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)) {
             outState.putLong(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0));
         }
         super.onSaveInstanceState(outState);
@@ -342,7 +350,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
-        Log.i(TAG, "Saving regId "+regId+" on app version " + appVersion);
+        Log.i(TAG, "Saving regId " + regId + " on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
@@ -360,11 +368,12 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         }
     }
 
-    private void sendRegistrationIdToBackend(){
+    private void sendRegistrationIdToBackend() {
         if (regService == null) {
             Registration.Builder builder = new Registration.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
                     .setRootUrl("https://tasteofuganda.appspot.com/_ah/api/");
+
             /*Need setRootUrl and setGoogleClientRequestInitializer only for local testing,
             otherwise they can be skipped*/
             /*.setRootUrl("http://10.0.2.2:8080/_ah/api/")
@@ -388,48 +397,38 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         }
     }
 
-    private void registerInBackground() {
-        new AsyncTask() {
+    private class RegisterAsyncTask extends AsyncTask<Context, Void, String> {
 
-            @Override
-            protected String doInBackground(Object[] params) {
-                String msg = "";
-                try {
-                    if (gcm == null) {
-                        gcm = GoogleCloudMessaging.getInstance(context);
-                    }
-                    regid = gcm.register(SENDER_ID);
-                    msg = "Device registered, registration ID=" + regid;
-
-                    // You should send the registration ID to your server over HTTP,
-                    // so it can use GCM/HTTP or CCS to send messages to your app.
-                    // The request to your server should be authenticated if your app
-                    // is using accounts.
-                    sendRegistrationIdToBackend();
-
-                    // For this demo: we don't need to send it because the device
-                    // will send upstream messages to a server that echo back the
-                    // message using the 'from' address in the message.
-
-                    // Persist the regID - no need to register again.
-                    storeRegistrationId(context, regid);
-                } catch (IOException ex) {
-                    msg = "Error :" + ex.getMessage();
-                    // If there is an error, don't just keep trying to register.
-                    // Require the user to click a button again, or perform
-                    // exponential back-off.
+        @Override
+        protected String doInBackground(Context... params) {
+            String msg = "";
+            try {
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(context);
                 }
-                return msg;
+                regid = gcm.register(SENDER_ID);
+                msg = "Device registered, registration ID=" + regid;
+
+                // Send the registration ID to server over HTTP
+                sendRegistrationIdToBackend();
+
+                // Persist the regID - no need to register again.
+                storeRegistrationId(context, regid);
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                msg = "Error :" + ex.getMessage();
             }
+            return msg;
+        }
 
-            protected void onPostExecute(String msg) {
-                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-                Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
-            }
-
-        }.execute(null, null, null);
-
+        @Override
+        protected void onPostExecute(String msg) {
+            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+            Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
+        }
     }
 }
+
 
 

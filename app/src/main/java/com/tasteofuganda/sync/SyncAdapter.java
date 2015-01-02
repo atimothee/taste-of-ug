@@ -126,7 +126,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
                 contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                 contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
-                //contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
+                contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
                 try{
                     provider.update(RecipeColumns.CONTENT_URI, contentValues,
                             "_id = ?", new String[]{r.getId().toString()});
@@ -150,13 +150,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 List<Category> categories = new ArrayList<Category>();
                 CollectionResponseCategory responseCategory = categoryApi.list().execute();
                 categories.addAll(responseCategory.getItems());
+                CategoryApi.List list;
                 do{
-                    Log.d(TAG, "Next page token is not empty");
-                    CategoryApi.List list = categoryApi.list();
+                    Log.d(TAG, "response is not empty, category size is "+responseCategory.getItems().size());
+                    list = categoryApi.list();
                     list.setCursor(responseCategory.getNextPageToken());
-                    responseCategory = categoryApi.list().execute();
-                    categories.addAll(responseCategory.getItems());
-                }while (!responseCategory.getNextPageToken().isEmpty());
+                    responseCategory = list.execute();
+                    if(responseCategory.getItems()!=null){categories.addAll(responseCategory.getItems());}
+                }while (responseCategory.getItems()!=null);
 
                 for (Category c : categories) {
                     categoryContentValues = new ContentValues();
@@ -177,14 +178,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 CollectionResponseRecipe responseRecipe = recipeApi.list().execute();
                 recipes.addAll(responseRecipe.getItems());
                 do{
-                    Log.d(TAG, "Next page token is not empty");
-                    CategoryApi.List list = categoryApi.list();
+                    Log.d(TAG, "response is not empty, size is "+responseRecipe.getItems().size());
+                    RecipeApi.List list = recipeApi.list();
                     list.setCursor(responseRecipe.getNextPageToken());
-                    responseRecipe = recipeApi.list().execute();
-                    recipes.addAll(responseRecipe.getItems());
-                }while (!responseRecipe.getNextPageToken().isEmpty());
+                    responseRecipe = list.execute();
+                    if(responseRecipe.getItems()!=null){recipes.addAll(responseRecipe.getItems());}
+                }while (responseRecipe.getItems()!=null);
 
                 for (Recipe r : recipes) {
+                    Log.d(TAG, "operating on recipe "+r.getName()+" with category id "+r.getCategoryId());
                     contentValues = new ContentValues();
                     contentValues.put(RecipeColumns._ID, r.getId());
                     contentValues.put(RecipeColumns.RECIPE_NAME, r.getName());
@@ -193,7 +195,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                     contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
                     contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
-                    //contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
+                    contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
                     contentValuesList.add(contentValues);
                     Log.d(TAG, "Recipe " + r.getName() + " downloaded");
                 }
@@ -207,12 +209,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }catch(Exception e){
             e.printStackTrace();
         }
-
-
-
-
-
-
     }
 
 }

@@ -1,6 +1,7 @@
 package com.tasteofuganda.app;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,7 +19,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.tasteofuganda.app.provider.category.CategoryColumns;
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 
@@ -29,16 +33,17 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int RECIPE_LOADER = 0;
     private static final String SAVED_STATE_SELECTION_KEY = "selection";
-    private static final String ARGS_SELECTED_ID_KEY = "selected_id";//for when fragment is called from notification
+    private static final String ARGS_SAVED_STATE_SELECTED_ID_KEY = "selected_id";//for when fragment is called from notification
     private static final String ARGS_CATEGORY_ID_KEY = "category_id";
     private static final String ARGS_IS_SEARCH_KEY = "is_search";
     private static final String ARGS_QUERY_KEY = "query";
     private static final String TAG = RecipeFragment.class.getSimpleName();
     private SimpleCursorAdapter recipeAdapter;
-    private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEURL};
-    private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_description, R.id.recipe_image};
+    private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEURL, CategoryColumns.COLOR};
+    private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_description, R.id.recipe_image, R.id.recipe_bg};
     private int mPosition;
     private ListView mListView;
+    private Long mSelectedId;
 
     public interface Callback{
         public void onItemSelected(Long id);
@@ -56,15 +61,24 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         recipeAdapter = new SimpleCursorAdapter(getActivity(),R.layout.list_item_recipe, null,COLUMNS, VIEW_IDS, 0);
         View rootView = inflater.inflate(R.layout.recipe_fragment, null);
         mListView = (ListView) rootView.findViewById(R.id.recipe_list);
-        recipeAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder(){
+        recipeAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             /** Binds the Cursor column defined by the specified index to the specified view */
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex){
-                view.setTag(1, cursor.getLong(cursor.getColumnIndex(RecipeColumns._ID)));
-                if(view.getId() == R.id.recipe_image){
+            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                if(view.getId() == R.id.recipe_title) {
+                    view.setTag(cursor.getLong(cursor.getColumnIndex(RecipeColumns._ID)));
+                    ((TextView)view).setText(cursor.getString(cursor.getColumnIndex(RecipeColumns.RECIPE_NAME)));
+                    return true;
+                }
+                else if (view.getId() == R.id.recipe_image) {
                     //((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
 
-                    Picasso.with(getActivity()).load(cursor.getString(columnIndex)).into((ImageView)view);
-                    return true; //true because the data was bound to the view
+                    Picasso.with(getActivity()).load(cursor.getString(columnIndex)).into((ImageView) view);
+                    return true;
+
+                }
+                else if (view.getId() == R.id.recipe_bg) {
+                    view.setBackgroundColor(Color.parseColor(cursor.getString(cursor.getColumnIndex(CategoryColumns.COLOR))));
+                    return true;
                 }
                 return false;
             }
@@ -83,6 +97,9 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
         if(savedInstanceState!=null && savedInstanceState.containsKey(SAVED_STATE_SELECTION_KEY)){
             mPosition = savedInstanceState.getInt(SAVED_STATE_SELECTION_KEY);
         }
+        if(savedInstanceState!=null && savedInstanceState.containsKey(ARGS_SAVED_STATE_SELECTED_ID_KEY)){
+            mSelectedId = savedInstanceState.getLong(ARGS_SAVED_STATE_SELECTED_ID_KEY);
+        }
 
         return rootView;
     }
@@ -94,28 +111,28 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             if(args.getBoolean(ARGS_IS_SEARCH_KEY)){
                 String[] selectionArgs  = new String[]{args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY)};
                 return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI,
-                        RecipeColumns.FULL_PROJECTION,
+                        ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION, new String[]{CategoryColumns.COLOR}),
                         RecipeColumns.DESCRIPTION+" like ?"+" or "+RecipeColumns.DIRECTIONS+" like ?"+" or "+RecipeColumns.RECIPE_NAME+" like ?",
                         selectionArgs,
                         null
                         );
             }
         }else{
-            if(args != null && args.containsKey(ARGS_CATEGORY_ID_KEY) && args.getLong(ARGS_CATEGORY_ID_KEY)==0){
+            if(args != null && args.containsKey(ARGS_CATEGORY_ID_KEY) && args.getLong(ARGS_CATEGORY_ID_KEY)==1){
                 return new CursorLoader(
                         getActivity(),
                         RecipeColumns.CONTENT_URI,
-                        RecipeColumns.FULL_PROJECTION,
+                        ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION, new String[]{CategoryColumns.COLOR}),
                         null,
                         null,
                         null
                 );
             }else if(args != null && args.containsKey(ARGS_CATEGORY_ID_KEY)){
-                String[] selectionArgs  = new String[]{String.valueOf(args.getLong(ARGS_CATEGORY_ID_KEY, 0))};
+                String[] selectionArgs  = new String[]{String.valueOf(args.getLong(ARGS_CATEGORY_ID_KEY, 1))};
                 return new CursorLoader(
                         getActivity(),
                         RecipeColumns.CONTENT_URI,
-                        RecipeColumns.FULL_PROJECTION,
+                        ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION, new String[]{CategoryColumns.COLOR}),
                         RecipeColumns.CATEGORYID+" = ?",
                         selectionArgs,
                         null
@@ -126,7 +143,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 return new CursorLoader(
                         getActivity(),
                         RecipeColumns.CONTENT_URI,
-                        RecipeColumns.FULL_PROJECTION,
+                        ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION, new String[]{CategoryColumns.COLOR}),
                         null,
                         null,
                         null
@@ -143,16 +160,30 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         recipeAdapter.swapCursor(data);
 
-        if(getArguments().containsKey(ARGS_SELECTED_ID_KEY)){
+        if(mSelectedId!=null){
+            Log.d(TAG, "selected id is "+mSelectedId);
             ArrayList<View> views = new ArrayList<>();
             mListView.reclaimViews(views);
+            Long tagValue;
+            int count = 0;
             for(View v: views){
-                if(v.getTag(1) == Long.valueOf(getArguments().getString(ARGS_SELECTED_ID_KEY))){
-                    mPosition = mListView.getPositionForView(v);
+                tagValue = (Long)v.findViewById(R.id.recipe_title).getTag();
+                Log.d(TAG, "views looped, tag "+tagValue+" "+v.findViewById(R.id.recipe_title).getTag().getClass().getName());
+                if(mSelectedId.longValue() == tagValue.longValue()){
+                    mPosition = count;
+                    Log.d(TAG, "position for view is "+mPosition);
+                    mListView.performItemClick(
+                            mListView.getAdapter().getView(mPosition, null, null),
+                            mPosition,
+                            mListView.getAdapter().getItemId(mPosition));
+                    Log.d(TAG, "list was clicked at position "+mPosition);
+                    break;
                 }
+                count++;
             }
         }
         mListView.setSelection(mPosition);
+        Log.d(TAG, "Recipe fragment cursor finished loading");
     }
 
     @Override
@@ -162,12 +193,20 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void reloadRecipeFragmentFromArgs(Bundle args) {
         getLoaderManager().restartLoader(RECIPE_LOADER, args, this);
+        if(args.containsKey(ARGS_SAVED_STATE_SELECTED_ID_KEY)) {
+            mSelectedId = args.getLong(ARGS_SAVED_STATE_SELECTED_ID_KEY);
+            Log.d(TAG, "mselectedId has been set with value "+mSelectedId+" on frag reload");
+        }
+
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if(mPosition != ListView.INVALID_POSITION){
             outState.putInt(SAVED_STATE_SELECTION_KEY, mPosition);
+        }
+        if(mSelectedId != null){
+            outState.putLong(ARGS_SAVED_STATE_SELECTED_ID_KEY, mSelectedId);
         }
         super.onSaveInstanceState(outState);
     }

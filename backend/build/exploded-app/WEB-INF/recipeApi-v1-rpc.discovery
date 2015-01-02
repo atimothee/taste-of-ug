@@ -1,6 +1,6 @@
 {
  "kind": "discovery#rpcDescription",
- "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/OUqvhJqdt2H8Gh9NFfDZxKL-GFk\"",
+ "etag": "\"c05bU6zpvXPOpQakG5gG3IOJh8Y/36HvpwOvTYbVEYmAZ7o_GzAB1zg\"",
  "discoveryVersion": "v1",
  "id": "recipeApi:v1",
  "name": "recipeApi",
@@ -125,6 +125,9 @@
     "image": {
      "$ref": "BlobKey"
     },
+    "image_url": {
+     "type": "string"
+    },
     "ingredients": {
      "$ref": "Text"
     },
@@ -226,6 +229,9 @@
     },
     "image": {
      "$ref": "BlobKey"
+    },
+    "image_url": {
+     "type": "string"
     },
     "ingredients": {
      "$ref": "Text"

@@ -1,5 +1,7 @@
 package com.tasteofuganda.backend;
 
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Sender;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -10,6 +12,7 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cmd.Query;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -41,6 +44,7 @@ public class RecipeEndpoint {
     private static final Logger logger = Logger.getLogger(RecipeEndpoint.class.getName());
 
     private static final int DEFAULT_LIST_LIMIT = 20;
+    private static final String API_KEY = System.getProperty("gcm.api.key");
 
     static {
         // Typically you would register this inside an OfyServive wrapper. See: https://code.google.com/p/objectify-appengine/wiki/BestPractices
@@ -82,6 +86,22 @@ public class RecipeEndpoint {
         // If your client provides the ID then you should probably use PUT instead.
         ofy().save().entity(recipe).now();
         logger.info("Created Recipe with ID: " + recipe.getId());
+        Message.Builder builder = new Message.Builder();
+        builder.addData("id", ofy().load().entity(recipe).now().id.toString());
+        builder.addData("type", "tickle");
+        builder.addData("resource_type", "recipe");
+        Message message = builder.build();
+        Sender sender = new Sender(API_KEY);
+        List<RegistrationRecord> records = OfyService.ofy().load().type(RegistrationRecord.class).list();
+        List<String> regIds = new ArrayList<String>();
+        for (RegistrationRecord record : records) {
+            regIds.add(record.getRegId());
+        }
+        try {
+            sender.send(message, regIds, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return ofy().load().entity(recipe).now();
     }
@@ -104,6 +124,22 @@ public class RecipeEndpoint {
         checkExists(id);
         ofy().save().entity(recipe).now();
         logger.info("Updated Recipe: " + recipe);
+        Message.Builder builder = new Message.Builder();
+        builder.addData("id", id.toString());
+        builder.addData("type", "tickle");
+        builder.addData("resource_type", "recipe");
+        Message message = builder.build();
+        Sender sender = new Sender(API_KEY);
+        List<RegistrationRecord> records = OfyService.ofy().load().type(RegistrationRecord.class).list();
+        List<String> regIds = new ArrayList<String>();
+        for (RegistrationRecord record : records) {
+            regIds.add(record.getRegId());
+        }
+        try {
+            sender.send(message, regIds, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return ofy().load().entity(recipe).now();
     }
 

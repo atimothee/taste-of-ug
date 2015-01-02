@@ -2,16 +2,14 @@ package com.tasteofuganda.app;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +22,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.tasteofuganda.app.provider.category.CategoryColumns;
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Created by Timo on 12/30/14.
@@ -36,12 +37,10 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     }
 
     private static final int DETAIL_LOADER = 1;
-    private static final String RECIPE_SHARE_HASHTAG = "#TasteOfUgApp";
+    private static final String RECIPE_SHARE_HASH_TAG = "#TasteOfUgApp";
     private static final String TAG = RecipeDetailFragment.class.getSimpleName();
-    //private static final  String IMAGE_BASE_URI = "http://tasteofuganda.appspot.com/serve?blob-key=";
     private Long mId;
     private String mShareString;
-    private Cursor mCursor;
     private TextView mTitleView;
     private TextView mDescriptionView;
     private TextView mDirectionsView;
@@ -86,7 +85,12 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] selectionArgs = {String.valueOf(args.getLong("id"))};
-        return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI, RecipeColumns.FULL_PROJECTION, "_id = ?", selectionArgs, null);
+        return new CursorLoader(getActivity(),
+                RecipeColumns.CONTENT_URI,
+                ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION),
+                RecipeColumns._ID+" = ?",
+                selectionArgs,
+                null);
     }
 
     @Override
@@ -94,6 +98,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         if(data.moveToFirst()){
             String name = data.getString(data.getColumnIndex(RecipeColumns.RECIPE_NAME));
             mTitleView.setText(name);
+            //mTitleView.setTextColor(Color.parseColor(data.getString(data.getColumnIndex(CategoryColumns.COLOR))));
             String description = data.getString(data.getColumnIndex(RecipeColumns.DESCRIPTION));
             mDescriptionView.setText(description);
             String ingredients = data.getString(data.getColumnIndex(RecipeColumns.INGREDIENTS));
@@ -104,7 +109,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
             mDirectionsView.setText(directions);
             String imageUrl = data.getString(data.getColumnIndex(RecipeColumns.IMAGEURL));
             Picasso.with(getActivity()).load(imageUrl).into(mImageView);
-            mShareString = "I just checked out "+name+" recipe "+RECIPE_SHARE_HASHTAG;
+            mShareString = "I just checked out "+name+" recipe "+ RECIPE_SHARE_HASH_TAG;
             getActivity().setTitle(name);
         }
     }
@@ -130,7 +135,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, mShareString+RECIPE_SHARE_HASHTAG);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, mShareString+ RECIPE_SHARE_HASH_TAG);
         return shareIntent;
     }
 

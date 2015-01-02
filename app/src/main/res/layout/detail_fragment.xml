@@ -5,7 +5,10 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        >
 
     <ImageView
         android:layout_width="match_parent"
@@ -35,7 +38,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/detail_ingredients"
         android:paddingBottom="10dp"
-        android:textAppearance="?android:textAppearanceMedium"
+        android:textStyle="italic"
         />
     <TextView
         android:layout_width="match_parent"

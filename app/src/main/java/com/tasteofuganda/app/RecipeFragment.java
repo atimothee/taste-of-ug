@@ -109,10 +109,13 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
         if(args!=null && args.containsKey(ARGS_IS_SEARCH_KEY) && args.containsKey(ARGS_QUERY_KEY)){
             if(args.getBoolean(ARGS_IS_SEARCH_KEY)){
-                String[] selectionArgs  = new String[]{args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY)};
+                String[] selectionArgs  = new String[]{"%"+args.getString(ARGS_QUERY_KEY)+"%",
+                        "%"+args.getString(ARGS_QUERY_KEY)+"%",
+                        "%"+args.getString(ARGS_QUERY_KEY)+"%"
+                };//, args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY)};
                 return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI,
                         ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION, new String[]{CategoryColumns.COLOR}),
-                        RecipeColumns.DESCRIPTION+" like ?"+" or "+RecipeColumns.DIRECTIONS+" like ?"+" or "+RecipeColumns.RECIPE_NAME+" like ?",
+                        RecipeColumns.DESCRIPTION+" LIKE ? OR "+RecipeColumns.DIRECTIONS+" LIKE ?"+" OR "+RecipeColumns.RECIPE_NAME+" LIKE ?",
                         selectionArgs,
                         null
                         );

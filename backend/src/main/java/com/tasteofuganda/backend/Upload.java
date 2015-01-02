@@ -11,6 +11,7 @@ import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class Upload extends HttpServlet{
             res.sendRedirect("/");
         } else {
             Recipe r = new Recipe();
-            r.category = Key.create(Category.class, req.getParameter("categoryId"));
+            r.category = ObjectifyService.factory().keys().keyOf(ObjectifyService.ofy().load().type(Category.class).id(req.getParameter("categoryId")).now());
             r.description = req.getParameter("description");
             r.directions = new Text(req.getParameter("directions"));
             r.ingredients = new Text(req.getParameter("ingredients"));

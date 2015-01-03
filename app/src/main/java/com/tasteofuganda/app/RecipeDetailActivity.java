@@ -34,15 +34,13 @@ public class RecipeDetailActivity extends ActionBarActivity{
         if(mColor!=null && !mColor.isEmpty()){
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(mColor)));
         }
-        if(savedInstanceState==null) {
-            Bundle args = new Bundle();
-            args.putLong(DETAIL_ID_KEY, mId);
-            RecipeDetailFragment detailFragment = new RecipeDetailFragment();
-            detailFragment.setArguments(args);
-            getSupportFragmentManager().beginTransaction()
+        Bundle args = new Bundle();
+        args.putLong(DETAIL_ID_KEY, mId);
+        RecipeDetailFragment detailFragment = new RecipeDetailFragment();
+        detailFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
                     .add(R.id.recipe_detail_container, detailFragment)
                     .commit();
-        }
 
     }
 

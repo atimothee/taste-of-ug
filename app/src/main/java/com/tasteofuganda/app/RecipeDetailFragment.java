@@ -51,7 +51,6 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.detail_fragment, null);
         mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
         mDescriptionView = (TextView) rootView.findViewById(R.id.detail_description);

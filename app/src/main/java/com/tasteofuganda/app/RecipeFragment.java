@@ -3,6 +3,8 @@ package com.tasteofuganda.app;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -173,10 +175,21 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 if(mSelectedId.longValue() == tagValue.longValue()){
                     mPosition = count;
                     Log.d(TAG, "position for view is "+mPosition);
-                    mListView.performItemClick(
+                    //mListView.setSelection(mPosition);
+                    final int WHAT = 1;
+                    Handler handler = new Handler(){
+                        @Override
+                        public void handleMessage(Message msg) {
+                            if(msg.what == WHAT) {
+                                                    mListView.performItemClick(
                             mListView.getAdapter().getView(mPosition, null, null),
                             mPosition,
                             mListView.getAdapter().getItemId(mPosition));
+                            };
+                        }
+                    };
+                    handler.sendEmptyMessage(WHAT);
+
                     Log.d(TAG, "list was clicked at position "+mPosition);
                     break;
                 }
@@ -187,7 +200,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             mListView.setSelection(mPosition);
             Log.d(TAG, "selected position is "+mPosition);
         }
-        Log.d(TAG, "Recipe fragment cursor finished loading, cursor size is "+data.getCount());
+        Log.d(TAG, "Recipe fragment cursor finished loading");
     }
 
     @Override

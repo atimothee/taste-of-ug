@@ -48,5 +48,6 @@ public class RecipeDetailActivity extends ActionBarActivity{
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(DETAIL_ID_KEY, mId);
+        outState.putString(COLOR_KEY, mColor);
     }
 }

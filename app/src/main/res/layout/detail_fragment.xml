@@ -6,8 +6,6 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
         >
 
     <ImageView
@@ -17,11 +15,10 @@
         android:scaleType="centerCrop"
         />
     <TextView
-        android:paddingTop="15dp"
+        android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/detail_title"
-        android:paddingBottom="15dp"
         android:textAppearance="?android:textAppearanceLarge"
         android:fontFamily="san-serif-condensed"
         />
@@ -30,14 +27,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/detail_description"
-        android:paddingBottom="10dp"
+        android:padding="10dp"
         />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/detail_ingredients"
-        android:paddingBottom="10dp"
+        android:padding="10dp"
         android:textStyle="italic"
         />
     <TextView

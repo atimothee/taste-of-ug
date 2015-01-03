@@ -3,7 +3,6 @@ package com.tasteofuganda.app;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 
 /**
@@ -14,6 +13,7 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
     private static final String DETAIL_ID_KEY = "id";
     private static final String ARGS_IS_SEARCH_KEY = "is_search";
     private static final String ARGS_QUERY_KEY = "query";
+    private static final String COLOR_KEY = "color";
     private Boolean mTwoPane;
 
     @Override
@@ -72,7 +72,7 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
             Intent i = new Intent(this, RecipeDetailActivity.class);
             i.putExtra(DETAIL_ID_KEY, id);
             if(color!=null){
-                i.putExtra("color", color);
+                i.putExtra(COLOR_KEY, color);
             }
             startActivity(i);
         }

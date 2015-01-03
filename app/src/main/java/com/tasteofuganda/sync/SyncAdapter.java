@@ -19,7 +19,6 @@ import android.util.Log;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.tasteofuganda.app.provider.TasteOfUgProvider;
 import com.tasteofuganda.app.provider.category.CategoryColumns;
 import com.tasteofuganda.app.provider.recipe.RecipeColumns;
 import com.tasteofuganda.backend.categoryApi.CategoryApi;
@@ -29,7 +28,6 @@ import com.tasteofuganda.backend.recipeApi.RecipeApi;
 import com.tasteofuganda.backend.recipeApi.model.CollectionResponseRecipe;
 import com.tasteofuganda.backend.recipeApi.model.Recipe;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +41,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     // Define a variable to contain a content resolver instance
     ContentResolver mContentResolver;
     private  final String TAG = SyncAdapter.class.getSimpleName();
+    private final String CATEGORY_TYPE = "category";
+    private final String RECIPE_TYPE = "recipe";
+    private final String RESOURCE_TYPE_KEY = "resource_type";
+    private final String MESSAGE_KEY = "message";
+    private final String SYNC_ALL_MESSAGE_VALUE = "sync-all";
+    private static final String ID_KEY = "id";
 
     /**
      * Set up the sync adapter
@@ -95,9 +99,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         RecipeApi recipeApi = builder.build();
         try{
 
-        if(extras.containsKey("resource_type") && extras.getString("resource_type")=="category"){
+        if(extras.containsKey(RESOURCE_TYPE_KEY) && extras.getString(RESOURCE_TYPE_KEY).equalsIgnoreCase(CATEGORY_TYPE)){
             try {
-                Category c = categoryApi.get(extras.getLong("id")).execute();
+                Category c = categoryApi.get(extras.getLong(ID_KEY)).execute();
                 ContentValues categoryContentValues = new ContentValues();
                 categoryContentValues.put(CategoryColumns._ID, c.getId());
                 categoryContentValues.put(CategoryColumns.NAME, c.getName());
@@ -115,9 +119,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 e.printStackTrace();
             }
 
-        }else if(extras.containsKey("resource_type") && extras.getString("resource_type")=="recipe"){
+        }else if(extras.containsKey(RESOURCE_TYPE_KEY) && extras.getString(RESOURCE_TYPE_KEY).equalsIgnoreCase(RECIPE_TYPE)){
             try {
-                Recipe r = recipeApi.get(extras.getLong("id")).execute();
+                Recipe r = recipeApi.get(extras.getLong(ID_KEY)).execute();
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(RecipeColumns._ID, r.getId());
                 contentValues.put(RecipeColumns.RECIPE_NAME, r.getName());
@@ -139,7 +143,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 e.printStackTrace();
             }
 
-        }else if(extras.containsKey("message") && extras.getString("message").equals("sync-all")) {
+        }else if(extras.containsKey(MESSAGE_KEY) && extras.getString(MESSAGE_KEY).equalsIgnoreCase(SYNC_ALL_MESSAGE_VALUE)) {
             Log.d(TAG, "Sync all is called...");
 
             List<ContentValues> categoryCValuesList = new ArrayList<ContentValues>();

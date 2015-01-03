@@ -71,6 +71,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private static final String INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY = "selected_id";//for when fragment is called from notification
     private static final String ARGS_CATEGORY_ID_KEY = "category_id";
     private static final String SAVED_STATE_SPINNER_SELECTION_KEY = "selection";
+    private static final String COLOR_KEY = "color";
     // An account type, in the form of a domain name
     public static final String ACCOUNT_TYPE = "com.tasteofuganda.datasync";
     // The account name
@@ -260,7 +261,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
                 i.putExtra(DETAIL_ID_KEY, mSelectedId);
             }
             if(color!=null){
-                i.putExtra("color", color);
+                i.putExtra(COLOR_KEY, color);
             }
             startActivity(i);
         }

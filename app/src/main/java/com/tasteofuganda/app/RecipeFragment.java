@@ -70,8 +70,6 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                     return true;
                 }
                 else if (view.getId() == R.id.recipe_image) {
-                    //((ImageView)view).setImageURI(Uri.parse("http://tasteofuganda.appspot.com/serve?blob-key=" + cursor.getString(columnIndex)));
-
                     Picasso.with(getActivity()).load(cursor.getString(columnIndex)).into((ImageView) view);
                     return true;
 
@@ -112,7 +110,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 String[] selectionArgs  = new String[]{"%"+args.getString(ARGS_QUERY_KEY)+"%",
                         "%"+args.getString(ARGS_QUERY_KEY)+"%",
                         "%"+args.getString(ARGS_QUERY_KEY)+"%"
-                };//, args.getString(ARGS_QUERY_KEY), args.getString(ARGS_QUERY_KEY)};
+                };
                 return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI,
                         ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION, new String[]{CategoryColumns.COLOR}),
                         RecipeColumns.DESCRIPTION+" LIKE ? OR "+RecipeColumns.DIRECTIONS+" LIKE ?"+" OR "+RecipeColumns.RECIPE_NAME+" LIKE ?",
@@ -154,7 +152,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             }
         }
 
-    //find way to return empty cursor
+
     return new CursorLoader(getActivity(), RecipeColumns.CONTENT_URI, null, null, null, null);
 
     }

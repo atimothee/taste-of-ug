@@ -195,8 +195,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     protected void onResume() {
         super.onResume();
         checkPlayServices();
-        GcmIntentService gcmIntentService = new GcmIntentService();
-        gcmIntentService.registerComponentCallbacks(RecipeActivity.this);
 
         if (getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)) {
             Log.d(TAG, "intent has extra "+INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY+", value is "+getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0));

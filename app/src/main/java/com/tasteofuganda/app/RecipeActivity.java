@@ -83,6 +83,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private static Registration regService = null;
     private Account mAccount;
     private ProgressBar mProgressBar;
+    private SyncStatusObserver syncStatusObserver;
 
 
     @Override
@@ -92,9 +93,16 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_spinner);
+//        syncStatusObserver = new SyncStatusObserver() {
+//            @Override
+//            public void onStatusChanged(int which) {
+//
+//            }
+//        });
+//        syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, syncStatusObserver);
 
         //Make progress bar appear when you need it
-        mProgressBar.setVisibility(View.VISIBLE);
+
 
         //Make progress bar disappear
        // mProgressBar.setVisibility(View.INVISIBLE);
@@ -193,11 +201,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         bundle.putString("message", "sync-all");
+        mProgressBar.setVisibility(View.VISIBLE);
 
-        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
-                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
-        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, RecipeActivity.this);
         ContentResolver.requestSync(mAccount, TasteOfUgProvider.AUTHORITY, bundle);
+        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, RecipeActivity.this);
 
     }
 
@@ -422,16 +429,25 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
     @Override
     public void onStatusChanged(int which) {
+        final int which1 = which;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Boolean isSynchronizing = ContentResolver.isSyncActive(mAccount, TasteOfUgProvider.AUTHORITY);//isSyncActive(mAccount, TasteOfUgProvider.AUTHORITY);
+                Log.d(TAG, "status changed which is "+which1);
+                //Log.d(TAG,"sync boolean "+isSynchronizing);
+                if(isSynchronizing) {
+                    Log.d(TAG, "is syncing ");
+                }else {
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                    Log.d(TAG, "syncing finished");
+                }
+            }
+        });
 
 
-        //Boolean isSynchronizing = isSyncActive(mAccount, TasteOfUgProvider.AUTHORITY);
-        Log.d(TAG, "status changed which is "+which);
-        //setProgressBarIndeterminateVisibility(false);
-//        if(isSynchronizing) {
-//            Log.d(TAG, "is syncing ");
-//        }else {
-//            Log.d(TAG, "is not syncing ");
-//        }
+
 
     }
 

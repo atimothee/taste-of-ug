@@ -12,7 +12,8 @@
         android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-
+    <uses-permission
+        android:name="android.permission.READ_SYNC_STATS"/>
 
     <permission
         android:name="com.tasteofuganda.app.gcm.permission.C2D_MESSAGE"
@@ -37,7 +38,7 @@
         <activity
             android:name=".RecipeActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppCompatTheme"
+            android:theme="@style/NoActionTheme"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

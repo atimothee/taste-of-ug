@@ -10,7 +10,7 @@
         <item name="logo">@drawable/ic_launcher</item>
         <item name="android:textAppearance">?android:textAppearanceLarge</item>
     </style>
-    <style name="AppCompatTheme" parent="@style/Theme.AppCompat.Light">
+    <style name="NoActionTheme" parent="Base.Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>
     </style>
 

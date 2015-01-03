@@ -42,6 +42,7 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.tasteofuganda.app.provider.TasteOfUgProvider;
 import com.tasteofuganda.app.provider.category.CategoryColumns;
 import com.tasteofuganda.backend.registration.Registration;
+import com.tasteofuganda.gcm.GcmIntentService;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -194,6 +195,13 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     protected void onResume() {
         super.onResume();
         checkPlayServices();
+        GcmIntentService gcmIntentService = new GcmIntentService();
+        gcmIntentService.registerComponentCallbacks(RecipeActivity.this);
+
+        if (getIntent().hasExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY)) {
+            Log.d(TAG, "intent has extra "+INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY+", value is "+getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0));
+            mSelectedId = getIntent().getLongExtra(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, 0);
+        }
     }
 
     public static Account CreateSyncAccount(Context context) {
@@ -216,6 +224,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
     @Override
     public void onItemSelected(Long id, String color) {
+        mSelectedId = id;
         if (mTwoPane) {
             Bundle args = new Bundle();
             args.putLong(DETAIL_ID_KEY, id);

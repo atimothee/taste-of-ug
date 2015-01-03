@@ -46,7 +46,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     private Long mSelectedId;
 
     public interface Callback{
-        public void onItemSelected(Long id);
+        public void onItemSelected(Long id, String color);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 mPosition = position;
                 Cursor cursor = recipeAdapter.getCursor();
                 if (cursor != null && cursor.moveToPosition(position)) {
-                    ((Callback) getActivity()).onItemSelected(cursor.getLong(0));
+                    ((Callback) getActivity()).onItemSelected(cursor.getLong(cursor.getColumnIndex(RecipeColumns._ID)), cursor.getString(cursor.getColumnIndexOrThrow(CategoryColumns.COLOR)));
                 }
             }
         });

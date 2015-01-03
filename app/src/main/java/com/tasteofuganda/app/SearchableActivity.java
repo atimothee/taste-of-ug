@@ -3,6 +3,7 @@ package com.tasteofuganda.app;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 
 /**
@@ -57,7 +58,7 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
     }
 
     @Override
-    public void onItemSelected(Long id) {
+    public void onItemSelected(Long id, String color) {
         if (mTwoPane) {
             Bundle args = new Bundle();
             args.putLong(DETAIL_ID_KEY, id);
@@ -70,7 +71,11 @@ public class SearchableActivity extends ActionBarActivity implements RecipeFragm
         } else {
             Intent i = new Intent(this, RecipeDetailActivity.class);
             i.putExtra(DETAIL_ID_KEY, id);
+            if(color!=null){
+                i.putExtra("color", color);
+            }
             startActivity(i);
         }
+
     }
 }

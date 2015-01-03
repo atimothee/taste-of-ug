@@ -13,9 +13,12 @@ import android.content.SyncStatusObserver;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -93,19 +96,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_spinner);
-//        syncStatusObserver = new SyncStatusObserver() {
-//            @Override
-//            public void onStatusChanged(int which) {
-//
-//            }
-//        });
-//        syncStatusObserver = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, syncStatusObserver);
-
-        //Make progress bar appear when you need it
-
-
-        //Make progress bar disappear
-       // mProgressBar.setVisibility(View.INVISIBLE);
+        //getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c9721b")));
 
         context = RecipeActivity.this;
         initializeSyncAdapter();
@@ -249,7 +240,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
 
     @Override
-    public void onItemSelected(Long id) {
+    public void onItemSelected(Long id, String color) {
         if (mTwoPane) {
             Bundle args = new Bundle();
             args.putLong(DETAIL_ID_KEY, id);
@@ -267,6 +258,9 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
             i.putExtra(DETAIL_ID_KEY, id);
             if (mSelectedId != null && mSelectedId != 0) {
                 i.putExtra(DETAIL_ID_KEY, mSelectedId);
+            }
+            if(color!=null){
+                i.putExtra("color", color);
             }
             startActivity(i);
         }

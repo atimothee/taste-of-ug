@@ -187,7 +187,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             mListView.setSelection(mPosition);
             Log.d(TAG, "selected position is "+mPosition);
         }
-        Log.d(TAG, "Recipe fragment cursor finished loading");
+        Log.d(TAG, "Recipe fragment cursor finished loading, cursor size is "+data.getCount());
     }
 
     @Override

@@ -111,6 +111,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
         if (findViewById(R.id.recipe_detail_container) != null) {
             mTwoPane = true;
+            Log.d(TAG, "two pane is true");
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.recipe_detail_container, new RecipeDetailFragment())
@@ -118,7 +119,9 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
             }
         } else {
             mTwoPane = false;
+            Log.d(TAG, "two pane is false");
         }
+        Log.d(TAG, "this line executed");
         mSpinnerAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_dropdown_item, categoryCursor, new String[]{CategoryColumns.NAME}, new int[]{android.R.id.text1}, 0);
 
         View spinnerContainer = LayoutInflater.from(RecipeActivity.this)

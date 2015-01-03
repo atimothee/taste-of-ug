@@ -95,7 +95,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         RecipeApi recipeApi = builder.build();
         try{
 
-        if(extras.getString("resource_type")=="category"){
+        if(extras.containsKey("resource_type") && extras.getString("resource_type")=="category"){
             try {
                 Category c = categoryApi.get(extras.getLong("id")).execute();
                 ContentValues categoryContentValues = new ContentValues();
@@ -115,7 +115,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 e.printStackTrace();
             }
 
-        }else if(extras.getString("resource_type")=="recipe"){
+        }else if(extras.containsKey("resource_type") && extras.getString("resource_type")=="recipe"){
             try {
                 Recipe r = recipeApi.get(extras.getLong("id")).execute();
                 ContentValues contentValues = new ContentValues();
@@ -139,7 +139,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 e.printStackTrace();
             }
 
-        }else if(extras.getString("message").equals("sync-all")) {
+        }else if(extras.containsKey("message") && extras.getString("message").equals("sync-all")) {
             Log.d(TAG, "Sync all is called...");
 
             List<ContentValues> categoryCValuesList = new ArrayList<ContentValues>();

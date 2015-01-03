@@ -8,6 +8,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SyncInfo;
+import android.content.SyncStatusObserver;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,13 +23,16 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -51,7 +56,7 @@ import java.util.logging.Logger;
 /**
  * Created by Timo on 12/29/14.
  */
-public class RecipeActivity extends ActionBarActivity implements RecipeFragment.Callback, LoaderManager.LoaderCallbacks {
+public class RecipeActivity extends ActionBarActivity implements RecipeFragment.Callback, LoaderManager.LoaderCallbacks, SyncStatusObserver {
     private Boolean mTwoPane;
     private static final String TAG = RecipeActivity.class.getSimpleName();
     public static final String PROPERTY_REG_ID = "registration_id";
@@ -77,12 +82,23 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private String regid;
     private static Registration regService = null;
     private Account mAccount;
+    private ProgressBar mProgressBar;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_recipes);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_spinner);
+
+        //Make progress bar appear when you need it
+        mProgressBar.setVisibility(View.VISIBLE);
+
+        //Make progress bar disappear
+       // mProgressBar.setVisibility(View.INVISIBLE);
+
         context = RecipeActivity.this;
         initializeSyncAdapter();
         if (checkPlayServices()) {
@@ -99,6 +115,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
+
 
         getSupportLoaderManager().initLoader(CATEGORY_LOADER, null, RecipeActivity.this);
 
@@ -168,6 +185,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
             mSelectedId = savedInstanceState.getLong(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY);
         }
 
+
     }
 
     private void syncImmediately() {
@@ -175,7 +193,12 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         bundle.putString("message", "sync-all");
+
+        final int mask = ContentResolver.SYNC_OBSERVER_TYPE_PENDING |
+                ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE;
+        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, RecipeActivity.this);
         ContentResolver.requestSync(mAccount, TasteOfUgProvider.AUTHORITY, bundle);
+
     }
 
     @Override
@@ -395,6 +418,48 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onStatusChanged(int which) {
+
+
+        //Boolean isSynchronizing = isSyncActive(mAccount, TasteOfUgProvider.AUTHORITY);
+        Log.d(TAG, "status changed which is "+which);
+        //setProgressBarIndeterminateVisibility(false);
+//        if(isSynchronizing) {
+//            Log.d(TAG, "is syncing ");
+//        }else {
+//            Log.d(TAG, "is not syncing ");
+//        }
+
+    }
+
+
+    private Boolean isSyncActive(Account account, String authority)
+    {
+            SyncInfo currentSync = ContentResolver.getCurrentSync();
+                if(currentSync != null && currentSync.account.equals(account)
+                        && currentSync.authority.equals(authority)) {
+                    return true;
+                }
+
+        return false;
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private Boolean isSyncActiveHoneycomb(Account account,
+                                                 String authority)
+    {
+        for(SyncInfo syncInfo : ContentResolver.getCurrentSyncs())
+        {
+            if(syncInfo.account.equals(account) &&
+                    syncInfo.authority.equals(authority))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class RegisterAsyncTask extends AsyncTask<Context, Void, String> {

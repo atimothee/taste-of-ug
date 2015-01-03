@@ -368,7 +368,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private SharedPreferences getGCMPreferences(Context context) {
         // This sample app persists the registration ID in shared preferences, but
         // how you store the regID in your app is up to you.
-        return getSharedPreferences(MainActivity.class.getSimpleName(),
+        return getSharedPreferences(RecipeActivity.class.getSimpleName(),
                 Context.MODE_PRIVATE);
     }
 

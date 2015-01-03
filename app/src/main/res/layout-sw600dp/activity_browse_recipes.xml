@@ -7,6 +7,7 @@
     android:divider="?android:attr/dividerHorizontal"
     tools:context="com.tasteofuganda.app.RecipeActivity"
     >
+    <include layout="@layout/my_toolbar"/>
     
     <fragment
         android:id="@+id/fragment_recipe"

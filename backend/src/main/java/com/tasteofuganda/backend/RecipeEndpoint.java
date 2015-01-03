@@ -99,7 +99,7 @@ public class RecipeEndpoint {
         }
         try {
             sender.send(message, regIds, 10);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

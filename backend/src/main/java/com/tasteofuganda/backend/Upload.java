@@ -43,7 +43,7 @@ public class Upload extends HttpServlet{
             res.sendRedirect("/");
         } else {
             Recipe r = new Recipe();
-            r.category = ObjectifyService.factory().keys().keyOf(ObjectifyService.ofy().load().type(Category.class).id(req.getParameter("categoryId")).now());
+            r.category  = Key.create(Category.class, Long.valueOf(req.getParameter("categoryId")));
             r.description = req.getParameter("description");
             r.directions = new Text(req.getParameter("directions"));
             r.ingredients = new Text(req.getParameter("ingredients"));
@@ -51,21 +51,8 @@ public class Upload extends HttpServlet{
             r.name = req.getParameter("name");
             ImagesService imagesService = ImagesServiceFactory.getImagesService();
             ServingUrlOptions sevOptions = ServingUrlOptions.Builder.withBlobKey(blobKeys.get(0));
-            res.sendRedirect(imagesService.getServingUrl(sevOptions));
-            r.image = blobKeys.get(0);
+            //r.image = blobKeys.get(0);
             r.image_url = imagesService.getServingUrl(sevOptions);
-            Message.Builder builder = new Message.Builder();
-            builder.addData("id", new RecipeEndpoint().insert(r).id.toString());
-            builder.addData("type", "tickle");
-            builder.addData("resource_type", "recipe");
-            Message message = builder.build();
-            Sender sender = new Sender(API_KEY);
-            List<RegistrationRecord> records = ofy().load().type(RegistrationRecord.class).list();
-            List<String> regIds = new ArrayList<String>();
-            for (RegistrationRecord record : records) {
-                regIds.add(record.getRegId());
-            }
-            sender.send(message, regIds, 10);
             res.sendRedirect(r.image_url);
         }
     }

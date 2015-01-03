@@ -183,6 +183,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         bundle.putString("message", "sync-all");
         mProgressBar.setVisibility(View.VISIBLE);
+        Log.d(TAG, "progress made visible");
 
         ContentResolver.requestSync(mAccount, TasteOfUgProvider.AUTHORITY, bundle);
         ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE, RecipeActivity.this);
@@ -391,9 +392,11 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
                 Log.d(TAG, "status changed which is "+which1);
                 if(isSynchronizing) {
                     Log.d(TAG, "is syncing ");
+                    mProgressBar.setVisibility(View.VISIBLE);
                 }else {
                     mProgressBar.setVisibility(View.INVISIBLE);
                     Log.d(TAG, "syncing finished");
+                    Log.d(TAG, "progress made invisible");
                 }
             }
         });

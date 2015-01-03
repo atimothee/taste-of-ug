@@ -129,7 +129,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
                 contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
                 contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
-                contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
                 contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
                 try{
                     provider.update(RecipeColumns.CONTENT_URI, contentValues,
@@ -198,7 +197,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     contentValues.put(RecipeColumns.DESCRIPTION, r.getDescription());
                     contentValues.put(RecipeColumns.DIRECTIONS, r.getDirections().getValue());
                     contentValues.put(RecipeColumns.INGREDIENTS, r.getIngredients().getValue());
-                    contentValues.put(RecipeColumns.IMAGEKEY, r.getImage().getKeyString());
                     contentValues.put(RecipeColumns.IMAGEURL, r.getImageUrl());
                     contentValuesList.add(contentValues);
                     Log.d(TAG, "Recipe " + r.getName() + " downloaded");

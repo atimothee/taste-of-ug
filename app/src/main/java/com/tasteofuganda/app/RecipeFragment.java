@@ -41,7 +41,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
     private SimpleCursorAdapter recipeAdapter;
     private final String[] COLUMNS = {RecipeColumns.RECIPE_NAME, RecipeColumns.DESCRIPTION, RecipeColumns.IMAGEURL, CategoryColumns.COLOR};
     private final int[] VIEW_IDS = {R.id.recipe_title, R.id.recipe_description, R.id.recipe_image, R.id.recipe_bg};
-    private int mPosition;
+    private Integer mPosition;
     private ListView mListView;
     private Long mSelectedId;
 
@@ -183,7 +183,10 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
                 count++;
             }
         }
-        mListView.setSelection(mPosition);
+        if(mPosition!=null) {
+            mListView.setSelection(mPosition);
+            Log.d(TAG, "selected position is "+mPosition);
+        }
         Log.d(TAG, "Recipe fragment cursor finished loading");
     }
 
@@ -203,7 +206,7 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(mPosition != ListView.INVALID_POSITION){
+        if(mPosition !=null && mPosition!= ListView.INVALID_POSITION){
             outState.putInt(SAVED_STATE_SELECTION_KEY, mPosition);
         }
         if(mSelectedId != null){

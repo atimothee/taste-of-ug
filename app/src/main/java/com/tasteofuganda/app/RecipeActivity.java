@@ -63,10 +63,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private static final String ARGS_CATEGORY_ID_KEY = "category_id";
     private static final String SAVED_STATE_SPINNER_SELECTION_KEY = "selection";
     private static final String COLOR_KEY = "color";
-    // An account type, in the form of a domain name
+
     public static final String ACCOUNT_TYPE = "com.tasteofuganda.datasync";
-    // The account name
     public static final String ACCOUNT = "dummyaccount";
+
     private Cursor categoryCursor;
     private SimpleCursorAdapter mSpinnerAdapter;
     private int mSpinnerSelectedPosition;
@@ -78,7 +78,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     private static Registration regService = null;
     private Account mAccount;
     private ProgressBar mProgressBar;
-    private SyncStatusObserver syncStatusObserver;
 
 
     @Override
@@ -88,7 +87,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_spinner);
-        //getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#c9721b")));
 
         context = RecipeActivity.this;
         initializeSyncAdapter();
@@ -198,29 +196,13 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     }
 
     public static Account CreateSyncAccount(Context context) {
-        // Create the account type and default account
-        Account newAccount = new Account(
-                ACCOUNT, ACCOUNT_TYPE);
-        // Get an instance of the Android account manager
-        AccountManager accountManager =
-                (AccountManager) context.getSystemService(
-                        ACCOUNT_SERVICE);
-        /*
-         * Add the account and account type, no password or user data
-         * If successful, return the Account object, otherwise report an error.
-         */
+        Account newAccount = new Account(ACCOUNT, ACCOUNT_TYPE);
+        AccountManager accountManager = (AccountManager) context.getSystemService(ACCOUNT_SERVICE);
+
         if (accountManager.addAccountExplicitly(newAccount, null, null)) {
-            /*
-             * If you don't set android:syncable="true" in
-             * in your <provider> element in the manifest,
-             * then call context.setIsSyncable(account, AUTHORITY, 1)
-             * here.
-             */
+
         } else {
-            /*
-             * The account exists or some other error occurred. Log this, report it,
-             * or handle it internally.
-             */
+            Log.d(TAG, "The account exists or some other error occurred");
         }
         return newAccount;
     }
@@ -288,22 +270,10 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
         inflater.inflate(R.menu.search, menu);
 
         // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager)
-
-
-                getSystemService
-
-
-                        (Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager)getSystemService (Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         // Assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(
-
-
-                getComponentName()
-
-
-        ));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
         return true;
@@ -357,8 +327,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
     }
 
     private SharedPreferences getGCMPreferences(Context context) {
-        // This sample app persists the registration ID in shared preferences, but
-        // how you store the regID in your app is up to you.
+        // Persist the registration ID in shared preferences
         return getSharedPreferences(RecipeActivity.class.getSimpleName(),
                 Context.MODE_PRIVATE);
     }
@@ -390,8 +359,7 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
                     new AndroidJsonFactory(), null)
                     .setRootUrl("https://tasteofuganda.appspot.com/_ah/api/");
 
-            /*Need setRootUrl and setGoogleClientRequestInitializer only for local testing,
-            otherwise they can be skipped*/
+            /*Uncomment for local testing*/
             /*.setRootUrl("http://10.0.2.2:8080/_ah/api/")
                     .setRootUrl("http://10.0.3.2:8080/_ah/api/")//for genymotion
                     .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
@@ -402,7 +370,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
                         }
                     });*/
-            /*end of optional local run code*/
 
             regService = builder.build();
         }
@@ -422,7 +389,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
             public void run() {
                 Boolean isSynchronizing = ContentResolver.isSyncActive(mAccount, TasteOfUgProvider.AUTHORITY);//isSyncActive(mAccount, TasteOfUgProvider.AUTHORITY);
                 Log.d(TAG, "status changed which is "+which1);
-                //Log.d(TAG,"sync boolean "+isSynchronizing);
                 if(isSynchronizing) {
                     Log.d(TAG, "is syncing ");
                 }else {
@@ -431,37 +397,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
                 }
             }
         });
-
-
-
-
-    }
-
-
-    private Boolean isSyncActive(Account account, String authority)
-    {
-            SyncInfo currentSync = ContentResolver.getCurrentSync();
-                if(currentSync != null && currentSync.account.equals(account)
-                        && currentSync.authority.equals(authority)) {
-                    return true;
-                }
-
-        return false;
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private Boolean isSyncActiveHoneycomb(Account account,
-                                                 String authority)
-    {
-        for(SyncInfo syncInfo : ContentResolver.getCurrentSyncs())
-        {
-            if(syncInfo.account.equals(account) &&
-                    syncInfo.authority.equals(authority))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     private class RegisterAsyncTask extends AsyncTask<Context, Void, String> {
@@ -491,7 +426,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
 
         @Override
         protected void onPostExecute(String msg) {
-            //Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
             Logger.getLogger("REGISTRATION").log(Level.INFO, msg);
         }
     }

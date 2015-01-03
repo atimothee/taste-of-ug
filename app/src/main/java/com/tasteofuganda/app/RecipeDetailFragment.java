@@ -38,6 +38,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     private static final int DETAIL_LOADER = 1;
     private static final String RECIPE_SHARE_HASH_TAG = "#TasteOfUgApp";
+    private static final String DETAIL_ID_KEY = "id";
     private static final String TAG = RecipeDetailFragment.class.getSimpleName();
     private Long mId;
     private String mShareString;
@@ -50,11 +51,6 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        if (args != null && args.containsKey("id")) {
-            //mShareString = intnt.getLongExtra("id", 0);
-            //mShareString = mCursor.getString(1);
-        }
         View rootView = inflater.inflate(R.layout.detail_fragment, null);
         mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
         mDescriptionView = (TextView) rootView.findViewById(R.id.detail_description);
@@ -68,7 +64,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //outState.putString();
+        //no need to save anything
         super.onSaveInstanceState(outState);
     }
 
@@ -77,14 +73,14 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         super.onResume();
 
         Bundle args = getArguments();
-        if(args!=null && args.containsKey("id") && mId!=null){
+        if(args!=null && args.containsKey(DETAIL_ID_KEY) && mId!=null){
             getLoaderManager().restartLoader(DETAIL_LOADER, args, this );
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] selectionArgs = {String.valueOf(args.getLong("id"))};
+        String[] selectionArgs = {String.valueOf(args.getLong(DETAIL_ID_KEY))};
         return new CursorLoader(getActivity(),
                 RecipeColumns.CONTENT_URI,
                 ArrayUtils.addAll(RecipeColumns.FULL_PROJECTION),
@@ -98,7 +94,6 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         if(data.moveToFirst()){
             String name = data.getString(data.getColumnIndex(RecipeColumns.RECIPE_NAME));
             mTitleView.setText(name);
-            //mTitleView.setTextColor(Color.parseColor(data.getString(data.getColumnIndex(CategoryColumns.COLOR))));
             String description = data.getString(data.getColumnIndex(RecipeColumns.DESCRIPTION));
             mDescriptionView.setText(description);
             String ingredients = data.getString(data.getColumnIndex(RecipeColumns.INGREDIENTS));
@@ -122,18 +117,15 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState!=null){
-            mId = savedInstanceState.getLong("id");
-        }
         Bundle args = getArguments();
-        if(args!=null && args.containsKey("id")){
+        if(args!=null && args.containsKey(DETAIL_ID_KEY)){
             getLoaderManager().initLoader(DETAIL_LOADER, args, this);
         }
     }
 
     private Intent createShareIntent(){
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, mShareString+ RECIPE_SHARE_HASH_TAG);
         return shareIntent;

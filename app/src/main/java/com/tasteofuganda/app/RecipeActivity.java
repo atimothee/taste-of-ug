@@ -140,10 +140,6 @@ public class RecipeActivity extends ActionBarActivity implements RecipeFragment.
                     categoryCursor.moveToPosition(position);
                     Bundle args = new Bundle();
                     args.putLong(ARGS_CATEGORY_ID_KEY, categoryCursor.getLong(categoryCursor.getColumnIndex(CategoryColumns._ID)));
-                    if(mSelectedId!=null && mSelectedId!=0){
-                        args.putLong(INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY, mSelectedId);
-                        Log.d(TAG, INTENT_SAVED_STATE_RECIPE_SELECTED_ID_KEY+" "+ mSelectedId+" has been added to arguments");
-                    }
                     frag.reloadRecipeFragmentFromArgs(args);
                 } else {
                     frag.reloadRecipeFragmentFromArgs(null);

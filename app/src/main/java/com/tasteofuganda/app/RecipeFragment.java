@@ -214,6 +214,9 @@ public class RecipeFragment extends Fragment implements LoaderManager.LoaderCall
             mSelectedId = args.getLong(ARGS_SAVED_STATE_SELECTED_ID_KEY);
             Log.d(TAG, "mselectedId has been set with value "+mSelectedId+" on frag reload");
         }
+        else{
+            mSelectedId = null;
+        }
 
     }
 
